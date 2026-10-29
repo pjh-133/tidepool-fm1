@@ -682,6 +682,7 @@ static struct {
 } lp[TP_NBUS];
 static float bus[TP_NBUS][TP_BLOCK] TP_BIG;
 static float bpm = 72.0f, until_next;
+static volatile uint8_t held, hold_req, go_req;   /* tp_hold: the main loop asks, the render acts */
 int tp_step;
 uint8_t tp_kal[64];
 
@@ -729,6 +730,15 @@ void tp_bank_kal(const tp_bank_t *b, uint8_t *kal)
             kal[i] = 0;
     }
 }
+
+void tp_hold(int on)
+{
+    if (on)
+        hold_req = 1;
+    else
+        go_req = 1;
+}
+int tp_held(void) { return (held || hold_req) && !go_req; }
 
 void tp_voice_limit(int n) { vlimit = n < 1 ? 1 : n > TP_MAXVOICE ? TP_MAXVOICE : n; }
 void tp_bpm(float b) { bpm = b; }
@@ -1218,6 +1228,7 @@ void tp_init(const tp_bank_t *b, uint32_t seed)
         set_pan(i);
     }
     tp_step = 0;
+    held = hold_req = go_req = 0;
     until_next = 0.08f * TP_SR;
     realign = fast_stop = 0;
     load_bank(b);
@@ -1302,13 +1313,27 @@ void tp_render(float *out, int n)
                 }
             }
         }
+        if (hold_req) {                    /* the clock held: no steps until let go */
+            hold_req = 0;
+            held = 1;
+        }
+        if (go_req) {                      /* let go: from the first beat of the cycle, at once */
+            go_req = 0;
+            if (held) {
+                held = 0;
+                tp_step = (tp_step + 63) / 64 * 64;
+                until_next = 0.0f;
+            }
+        }
         if (lq_r != lq_w)
             live_events(sps_n);
-        while (until_next < (float)TP_BLOCK) {   /* the steps that fall in this block */
-            do_step((int)until_next);
-            until_next += sps_n;
+        if (!held) {
+            while (until_next < (float)TP_BLOCK) {   /* the steps that fall in this block */
+                do_step((int)until_next);
+                until_next += sps_n;
+            }
+            until_next -= (float)TP_BLOCK;
         }
-        until_next -= (float)TP_BLOCK;
 
 #ifdef TP_PROFILE
         uint32_t pt = tp_prof_clock();       /* the stages' time, for the device's own measurement */

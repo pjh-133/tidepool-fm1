@@ -17,11 +17,23 @@ From the top:
 - **Messages:** pressing anything shows what it did for a moment in the banner area (for example TEMPO 80 BPM). See
   `troubleshooting.md` for what they mean.
 
+## Starting and stopping
+
+At power-on and after every bank change, nothing plays and the clock waits at bar 1 (the first chord lit). Pick
+loops with the white keys first: each blinks, waiting (READY - PLAY: START), and PLAY blinks too. Then:
+
+- **PLAY** starts the clock from bar 1 with the picked loops all coming in together on the first beat.
+- **SEQ** starts autoplay, which builds the mix itself.
+- **Holding HOME** (surprise) or **arming a recording** on the Blank Canvas also starts it.
+
+While playing, PLAY stops everything and puts the clock back at bar 1, ready for the next start. PLAY again with
+nothing picked brings back the mix that was stopped.
+
 ## Loops
 
 | Control | What it does |
 |---|---|
-| White keys 1-16 | Turn a loop on or off. Keys 1-4 are the top row of pools, 5-8 the second, 9-12 the third, 13-16 the bottom. A loop joins on the beat: its key and pool blink until it does, then its key stays lit. Turning one off fades it out |
+| White keys 1-16 | Turn a loop on or off. Keys 1-4 are the top row of pools, 5-8 the second, 9-12 the third, 13-16 the bottom. While playing, a loop joins on the beat: its key and pool blink until it does, then its key stays lit. While stopped, it blinks until PLAY. Turning one off fades it out |
 | Black keys | Not used in playback (the screen says NOT USED YET). In the Blank Canvas's recording mode they play notes |
 
 The rows are, top to bottom: drones and pads, melodies, beats, then textures (the scene's atmosphere: rain, wind,
@@ -48,7 +60,7 @@ Every bank keeps its own settings.
 
 | Control | What it does |
 |---|---|
-| PRESETS | Change bank. The bank changes once the knob stops turning (about 0.7 s): the loops fade out, then the new bank is ready with nothing playing. Twelve preset banks, then the Blank Canvas |
+| PRESETS | Change bank. The bank changes once the knob stops turning (about 0.7 s): the loops fade out, then the new bank waits at bar 1 with nothing playing (KEYS, THEN PLAY) for loops to be picked and PLAY or SEQ. With autoplay on, it carries straight on in the new bank instead. Twelve preset banks, then the Blank Canvas |
 | SELECT | Tempo, 56-140 BPM. Loops, autoplay and chord changes all follow it |
 | MASTER | Main volume |
 | SAVE | Remember the tempo, the current bank, every loop's settings in every bank, and every bank's chord progression, so they come back after switching off. SAVE is lit whenever something is unsaved. Loops recorded on the Blank Canvas save themselves straight away and don't need SAVE |
@@ -59,7 +71,7 @@ Without SAVE, changes to settings, tempo and chords are lost at power-off.
 
 | Control | What it does |
 |---|---|
-| PLAY/STOP | A quick press stops everything (STOP, AGAIN: SAME MIX). Pressing again brings back the same loops. It acts when released. With nothing chosen yet it says PICK LOOPS ON THE KEYS |
+| PLAY/STOP | Stopped: starts the picked loops together from bar 1 (PLAY n LOOPS), or with none picked brings back the mix last stopped. Playing: stops everything and puts the clock back to bar 1 (STOP, AGAIN: SAME MIX). It acts when released. With nothing to play it says PICK LOOPS ON THE KEYS |
 | Hold PLAY, turn KNOB1 | Change the bank's chord progression: 0 is the bank's own, 1-99 are new ones in the same key and mood, each the same every time. It changes at the next bar line. Holding PLAY for a moment shows KNOB 1: CHORDS and outlines the chords; letting go without turning does nothing (it doesn't stop the music) |
 | SEQ | Autoplay (below) |
 | Hold HOME for 3 seconds | Surprise me: a random mix of loops with random settings. A countdown shows; letting go early cancels. Not on the Blank Canvas |

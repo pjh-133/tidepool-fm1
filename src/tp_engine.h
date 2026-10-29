@@ -62,6 +62,10 @@ const tp_bank_t *tp_bank_now(void);
 void tp_voice_limit(int n);
 void tp_bpm(float bpm);
 void tp_toggle(int loop, int on);               /* on: joins on the next beat; off: fades out */
+/* the clock held (1): no steps, so loops turned on wait and nothing new starts (what sounds rings out); let go (0):
+ * it starts again on the first beat of the cycle (bar 1, the first chord), the loops waiting coming in together */
+void tp_hold(int on);
+int tp_held(void);
 void tp_volume(int loop, float v);
 void tp_master(float v);                        /* the MASTER pot, 0..1 (the web app's main volume: 0.8) */
 /* each loop's settings, as the web app's loop tweaks: volume 0..1, attack 0..1, decay 0..1 (0.5 = as designed),

@@ -8,8 +8,10 @@
  *   ALGORITHM        the row (a key pressed picks its row too)
  *   SELECT           tempo;  MASTER  volume;  PRESET  the bank (it changes once the knob rests: everything fades out
  *                    quickly, as the web app's bank switch, and the new bank starts on its first chord)
- *   PLAY             stop everything; again, the same mix back (on release; a hold long enough to show the chord
- *                    hint does neither)
+ *   PLAY             start: the clock waits at bar 1 at power-on, after a bank change and after a stop, so the loops
+ *                    picked (blinking, PLAY too) start together; playing, stop everything (the clock back to bar 1);
+ *                    stopped with none picked, the mix last stopped (on release; a hold long enough to show the
+ *                    chord hint does none of this). SEQ, a surprise and arming a take start the clock too
  *   PLAY + KNOB1     held, turned: the bank's chord progression (0 its own, 1..99 new ones in its key: tp_harmony),
  *                    from the next bar line; the loops that play chords or the note grid follow
  *   HOME             held 3 s (a countdown on the screen): surprise me
@@ -23,8 +25,8 @@
  *   recording (GLO)  the keys play the instrument (velocity: lib/touch), OCT-/OCT+ their octave, PRESET the
  *                    instrument, KNOB1-3 a new loop's length, snap (off, 1/16, 1/8, bar) and click; PLAY stops and starts the mix.
  *                    REC: a new loop in the next free slot; REC again: a bar's count-in, then it records, round and
- *                    round its length (each pass adds); REC again: kept, saved at once, playing on if anything else
- *                    plays. GLO during a take cancels it; HOME leaves recording mode as GLO does
+ *                    round its length (each pass adds); REC again: kept, saved at once, and playing on (the first
+ *                    loop too, ready for the next). GLO during a take cancels it; HOME leaves recording mode as GLO does
  *   EDIT held        the loops: a key picks one to delete, the same key again deletes it, any other key cancels
  * The footer shows the FM-1's own audio load (plat_cpu_pct) and any dropouts. Each bank has its own look (art.c);
  * the start shows a splash for a moment (any key, button or knob goes straight on).
@@ -399,6 +401,7 @@ void app_init(void)
     settings_load();
     canvas_load();
     tp_init(BANK, plat_ticks24() | 1u);
+    tp_hold(1);                              /* nothing moves until PLAY or SEQ: loops picked first start together */
     apply_progression(1);
     tp_prof_clock = plat_ticks24;            /* the engine's stages, timed (fm1.toml: TP_PROFILE) */
     tp_voice_limit(32);
@@ -549,7 +552,7 @@ static void toggle(int l)
     set_loop(l, !ui.want[l]);
     ui.row = (uint8_t)(pos_of(l) / 4);       /* the knobs follow the row you last touched */
     loop_name(l, n);
-    app_say(n, ui.want[l] ? "JOINS ON THE BEAT" : "FADING OUT");
+    app_say(n, !ui.want[l] ? "FADING OUT" : tp_held() ? "READY - PLAY: START" : "JOINS ON THE BEAT");
     ui.redraw |= 7;
 }
 
@@ -588,39 +591,47 @@ static void surprise(void)                   /* the web app's Surprise me: 1-2 l
     set_dirty = 1;
     int_text(played, t);
     text_cat(t, " LOOPS");
+    tp_hold(0);                              /* it plays at once */
     app_say("SURPRISE", t);
 }
 
 static void play_button(void)
 {
     uint16_t on = 0;
-    int l;
+    int l, n = 0;
     char t[16];
     for (l = 0; l < TP_NLOOP; l++)
         if (ui.want[l])
             on |= (uint16_t)(1u << l);
-    if (on) {
+    if (on && !tp_held()) {                  /* playing: everything out, the clock held at bar 1 */
         ui.last_set = on;
         for (l = 0; l < TP_NLOOP; l++)
             if (on >> l & 1u)
                 set_loop(l, 0);
+        tp_hold(1);
         app_say("STOP", "AGAIN: SAME MIX");
-    } else if (ui.last_set || IS_CANVAS) {
-        int n = 0;
-        if (!ui.last_set)                    /* the canvas, nothing stopped yet: every loop recorded */
-            for (l = 0; l < TP_NLOOP; l++)
-                if (tp_user[l].used)
-                    ui.last_set |= (uint16_t)(1u << l);
+        return;
+    }
+    if (!on && !ui.last_set && IS_CANVAS)    /* the canvas, nothing chosen or stopped yet: every loop recorded */
         for (l = 0; l < TP_NLOOP; l++)
-            if (ui.last_set >> l & 1u) {
+            if (tp_user[l].used)
+                ui.last_set |= (uint16_t)(1u << l);
+    if (!on && ui.last_set) {                /* nothing chosen: the mix last stopped */
+        for (l = 0; l < TP_NLOOP; l++)
+            if (ui.last_set >> l & 1u)
                 set_loop(l, 1);
-                n++;
-            }
-        int_text(n, t);
-        text_cat(t, " LOOPS");
-        app_say("PLAY", n ? t : "NOTHING RECORDED YET");
-    } else
-        app_say("PLAY", "PICK LOOPS ON THE KEYS");
+        on = ui.last_set;
+    }
+    if (!on) {
+        app_say("PLAY", IS_CANVAS ? "NOTHING RECORDED YET" : "PICK LOOPS ON THE KEYS");
+        return;
+    }
+    for (l = 0; l < TP_NLOOP; l++)
+        n += on >> l & 1u;
+    tp_hold(0);                              /* from bar 1, the loops chosen coming in together */
+    int_text(n, t);
+    text_cat(t, n == 1 ? " LOOP" : " LOOPS");
+    app_say("PLAY", t);
 }
 
 /* PLAY held a moment (a tap to stop or play shows nothing): KNOB1's chords offered until it is let go */
@@ -899,6 +910,7 @@ static void auto_end_step(void)
     }
     if (!auto_playing()) {
         ui.autoplay = 0;
+        tp_hold(1);                          /* stopped: the clock back at bar 1 for the next start */
         app_say("AUTOPLAY", "THE END");
         ui.redraw |= 7;
     }
@@ -919,6 +931,7 @@ static void auto_on(int on)
     ui.rnd ^= plat_ticks24();
     for (l = 0; l < TP_NLOOP; l++)
         ui.auto_age[l] = (uint16_t)rnd(3);
+    tp_hold(0);                              /* the clock going, if it was held */
     ui.auto_n = 0;
     ui.auto_cycle = (uint32_t)(tp_step + 4) >> 6;
     auto_step();                             /* something at once */
@@ -1019,6 +1032,7 @@ static void rec_button(void)
         U->bars = set.bars;
         U->snap = set.snap;
         tp_rec_arm(ui.rslot, set.click);
+        tp_hold(0);                          /* a held clock starts: the count-in at once */
         ui.rs = R_COUNT;
         app_say("COUNT-IN", "FROM THE NEXT BAR");
         break;
@@ -1028,10 +1042,8 @@ static void rec_button(void)
         ui.rs = R_IDLE;
         app_say("CANCELLED", "REC: A NEW LOOP");
         break;
-    default:                                 /* the take kept; it plays on if anything else does */
-        for (l = 0; l < TP_NLOOP; l++)
-            if (l != ui.rslot && ui.want[l])
-                keep = 1;
+    default:                                 /* the take kept, and it plays on (the first loop too: ready for a second) */
+        keep = 1;
         tp_rec_finish(keep);
         ui.rkeep = (uint8_t)keep;
         ui.rsaving = 1;                      /* rec_poll saves it once the engine has closed it */
@@ -1737,7 +1749,9 @@ void app_frame(void)
         set_dirty = 1;
         ui.switching = 0;
         bank_name(set.bank, b);
-        app_say(b, ui.autoplay ? "AUTOPLAY" : "READY");
+        if (!ui.autoplay)                    /* held at bar 1 until PLAY or SEQ: loops can be picked first */
+            tp_hold(1);
+        app_say(b, ui.autoplay ? "AUTOPLAY" : "KEYS, THEN PLAY");
         if (ui.autoplay == 1) {              /* straight on in the new bank (an ending: nothing new) */
             ui.auto_cycle = (uint32_t)(tp_step + 4) >> 6;
             auto_step();
@@ -1779,6 +1793,10 @@ void app_frame(void)
         keys = ui.keys;
     if (playing)
         btn |= 1u << B_PLAY;
+    else if (tp_held() && !ui.switching)     /* loops picked, waiting: PLAY blinks to start them */
+        for (l = 0; l < TP_NLOOP; l++)
+            if (ui.want[l] && (now / 300u) & 1u)
+                btn |= 1u << B_PLAY;
     if (set_dirty)
         btn |= 1u << B_SAVE;
     if (IS_CANVAS && ui.rec_mode) {          /* GLO lit; REC lit set up and recording, blinking for the count-in */
@@ -2021,6 +2039,8 @@ int app_expect(const char *what, int *got)
         *got = ui.auto_chord_moves;
     else if (!strcmp(what, "auto"))         /* autoplay on */
         *got = ui.autoplay;
+    else if (!strcmp(what, "held"))         /* the clock held at bar 1 (nothing started yet, or stopped) */
+        *got = tp_held();
     else if (!strncmp(what, "rowon", 5)) {  /* rowonR: loops playing in screen row R */
         int l;
         *got = 0;

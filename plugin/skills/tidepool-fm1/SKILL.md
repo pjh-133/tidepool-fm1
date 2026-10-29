@@ -48,7 +48,8 @@ Website: <https://pjh-133.github.io/tidepool-fm1/>, with the [web installer](htt
 - **Adjust loops:** OCT- / OCT+ pick what the knobs change (Volume, Attack, Decay, Reverb, Echo, Pan); ALGORITHM
   picks the row; KNOB1-4 change that row's four loops.
 - **Banks:** turn PRESETS. **Tempo:** turn SELECT (56-140 bpm). **Volume:** MASTER.
-- **Stop / start:** PLAY. Pressing it again brings back the same mix.
+- **Start / stop:** after switching on or changing bank nothing plays: pick loops on the keys (they blink), then
+  PLAY starts them together from bar 1. While playing, PLAY stops; PLAY again brings back the same mix.
 - **Chords:** hold PLAY and turn KNOB1 (0 is the bank's own progression, 1-99 are others in the same key).
 - **Autoplay:** SEQ. SEQ again ends it gracefully, fading loops out over a few bars.
 - **Random mix:** hold HOME for 3 seconds.

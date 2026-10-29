@@ -38,14 +38,15 @@ LENGTH, SNAP and CLICK can't be changed while a take is counting in or recording
 
 1. **REC** (first press): a new loop is set up in the next free pool. The screen says NEW LOOP n, REC AGAIN:
    COUNT-IN. Set the instrument, length, snap and click now if not already.
-2. **REC** (second press): armed. The count-in starts at the next bar line and lasts one bar (four beats, with the
-   click if it's on). COUNT-IN FROM THE NEXT BAR. Pressing REC during the count-in cancels (CANCELLED).
+2. **REC** (second press): armed. The count-in starts at the next bar line, or straight away if nothing is playing
+   yet, and lasts one bar (four beats, with the click if it's on). COUNT-IN FROM THE NEXT BAR. Pressing REC during
+   the count-in cancels (CANCELLED).
 3. Recording starts on the bar after the count-in: RECORDING, REC: DONE GLO: CANCEL. Play. The loop goes round and
    round its length; each pass **adds** to what's already there and plays it back, so a loop can be built up in
    layers (a bass line on the first pass, then chords, then a melody).
-4. **REC** (third press): kept and saved at once (no SAVE needed). If anything else was playing it plays on (SAVED,
-   PLAYING); if not, it waits (SAVED - PLAY: HEAR IT) and PLAY brings it in. If nothing was played the pool stays
-   empty (NOTHING RECORDED).
+4. **REC** (third press): kept and saved at once (no SAVE needed), and it keeps playing (LOOP n SAVED, PLAYING),
+   the very first loop too, so the next can be recorded straight over it: REC again for a new loop. If nothing was
+   played the pool stays empty (NOTHING RECORDED).
 
 GLO during a take cancels it (TAKE CANCELLED) and returns to playback. A take can't be added to after it's kept:
 record another loop instead, or delete it and record it again. All sixteen pools full says ALL 16 LOOPS USED,

@@ -33,7 +33,7 @@ wait 2200
 shot canvas_countin.png
 wait 3800
 expect rs 3
-# three notes with their velocities, then REC: kept, saved; nothing else plays, so it waits for PLAY
+# three notes with their velocities, then REC: kept, saved, and playing at once (the first loop too)
 tapkey 7 90
 wait 400
 tapkey 11 110
@@ -46,11 +46,9 @@ wait 100
 expect rs 0
 expect used0 1
 expect notes0 3
-expect want0 0
-shot canvas_kept.png
-tap PLAY
-wait 30
 expect want0 1
+expect held 0
+shot canvas_kept.png
 wait 4000
 expect state0 5
 shot canvas_playing.png

@@ -56,6 +56,10 @@ written in the mood of Dark Souls and Bloodborne, but every sound, chord and pic
 
 ## Playing it
 
+When you switch on or change bank, nothing plays yet and the bar counter waits at bar 1. Pick the loops you want on
+the white keys (they blink, waiting), then press **PLAY** and they all start together on the first beat. Or press
+**SEQ** to let autoplay build the mix for you.
+
 The screen shows the bank's name and tempo, its four chords (the current one lit), and sixteen pools in four rows.
 Each pool is a loop that glows in its row's colour while it plays.
 
@@ -63,20 +67,20 @@ Each pool is a loop that glows in its row's colour while it plays.
 
 | Control | What it does |
 |---|---|
-| **White keys 1–16** | Turn a loop on or off. Rows, top to bottom: drones, melodies, beats, then textures (rain, wind, fire: the scene's atmosphere). A loop waits for the next beat to come in, blinking until it does |
+| **White keys 1–16** | Turn a loop on or off. Rows, top to bottom: drones, melodies, beats, then textures (rain, wind, fire: the scene's atmosphere). While the music is playing, a loop waits for the next beat to come in, blinking until it does. While it's stopped, a loop you pick blinks until you press PLAY |
 | **KNOB 1–4** | Adjust the selected row's four loops, one knob each |
 | **OCT− / OCT+** | Choose what the knobs adjust: Volume, Attack, Decay, Reverb, Echo or Pan (shown bottom left) |
 | **ALGORITHM** | Choose the row the knobs adjust. Pressing a key selects its row too |
 | **SELECT** | Tempo (56–140 bpm) |
 | **MASTER** | Main volume |
-| **PRESETS** | Change bank. Everything fades out, then the new bank is ready |
+| **PRESETS** | Change bank. Everything fades out, then the new bank waits at bar 1 for you to pick loops and press PLAY (or SEQ) |
 | **SAVE** | Remember the tempo, the bank and every loop's settings in every bank. Lit when there's something unsaved |
 
 ### Play, chords and autoplay
 
 | Control | What it does |
 |---|---|
-| **PLAY** | Stop everything. Press again to bring back the same mix |
+| **PLAY** | Start: the loops you've picked come in together, from bar 1. While playing, PLAY stops everything and the counter goes back to bar 1; press it again to bring back the same mix. PLAY blinks when loops are picked and waiting |
 | **Hold PLAY, turn KNOB 1** | Change the bank's chord progression. 0 is the bank's own; 1–99 are new ones in the same key, each the same every time. The change comes in at the next bar. Hold PLAY for a moment and the screen reminds you |
 | **SEQ** | **Autoplay.** Tidepool brings loops in and out on its own, once every four bars (faster at higher tempos). It builds up from nothing to about two loops in each row, keeps every row going, changes the chords now and then, and changes the texture only rarely. It works on any bank, the Blank Canvas included |
 | **SEQ again** | **End autoplay gracefully.** Loops drop out a few at a time, every four bars (the beat first, the drones last), until everything has stopped. SEQ blinks while it ends; press SEQ once more to change your mind |
@@ -101,10 +105,12 @@ Once recorded, they play like any other bank: turn them on and off, adjust them 
    - **KNOB 3** turns the click on or off.
    - **OCT− / OCT+** shift the keys' octave.
 3. Press **REC** to start a new loop in the next free pool.
-4. Press **REC** again. A one-bar count-in starts at the next bar line, then recording begins.
+4. Press **REC** again. A one-bar count-in starts at the next bar line (straight away if nothing is playing yet),
+   then recording begins.
 5. Play. The loop goes round and round its length, and each pass adds to what's already there, so you can build it
    up layer by layer.
-6. Press **REC** a third time to keep it. It is saved straight away; no need to press SAVE.
+6. Press **REC** a third time to keep it. It is saved straight away (no need to press SAVE) and keeps playing, so
+   you can go straight on to record the next loop over it.
 
 GLO during a take cancels it. **GLO** or **HOME** takes you back to playback. **PLAY** starts and stops the mix
 while you record, so you can record over other loops.

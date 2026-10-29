@@ -4,7 +4,7 @@
 
 | Problem | Why, and what to do |
 |---|---|
-| I pressed a key and the loop didn't start | Loops join on the beat: the key and pool blink until it comes in (slow loops like drones and pads also fade in over a few seconds). If nothing blinks, check the music isn't stopped (press PLAY), the MASTER volume, and that the loop's VOLUME isn't at 0 (OCT- / OCT+ to VOLUME, then that row's knob) |
+| I pressed a key and the loop didn't start | After switching on or changing bank, nothing starts until PLAY (or SEQ): the loops you pick blink, waiting, and PLAY blinks too. Press PLAY. While playing, loops join on the beat: the key and pool blink until it comes in (slow loops like drones and pads also fade in over a few seconds). If nothing blinks, check the music isn't stopped (press PLAY), the MASTER volume, and that the loop's VOLUME isn't at 0 (OCT- / OCT+ to VOLUME, then that row's knob) |
 | A texture is very quiet | Textures (the bottom row) start at 25 % on purpose. Choose VOLUME with OCT- / OCT+, select the bottom row with ALGORITHM or by pressing a texture's key, and turn its knob up |
 | My settings were gone after switching off | Settings, tempo and chord progressions are only kept after SAVE (lit when something's unsaved). Recorded loops save themselves |
 | Holding PLAY to change chords stopped the music | It doesn't on current versions: a hold long enough to show KNOB 1: CHORDS never stops. A quick tap does stop (and another quick tap brings the same mix back) |
@@ -25,12 +25,15 @@
 | Message | Meaning |
 |---|---|
 | (a loop's name) JOINS ON THE BEAT / FADING OUT | Turned on (waiting for the beat) or off |
+| (a loop's name) READY - PLAY: START | Picked while stopped: it starts, with the others picked, when PLAY is pressed |
+| (bank name) KEYS, THEN PLAY | The new bank is ready and waiting at bar 1: pick loops on the white keys, then PLAY |
+| PLAY, n LOOPS | Started: n loops coming in from bar 1 |
 | (a loop's name) EMPTY - GLO TO RECORD | An empty pool on the Blank Canvas: record into it in recording mode |
-| STOP, AGAIN: SAME MIX | PLAY stopped everything; PLAY again brings the same loops back |
+| STOP, AGAIN: SAME MIX | PLAY stopped everything and put the clock back at bar 1; PLAY again brings the same loops back |
 | PLAY, PICK LOOPS ON THE KEYS | PLAY with nothing chosen yet: turn some loops on with the white keys |
 | KNOB 1: CHORDS, NOW ORIGINAL / NOW NO. n | Holding PLAY: turn KNOB1 to change the progression (original = the bank's own) |
 | CHANGING BANK | A key pressed while the bank changes: wait a moment |
-| (bank name) READY / AUTOPLAY | The new bank is ready (with autoplay carrying on) |
+| (bank name) AUTOPLAY | A new bank, autoplay carrying straight on in it |
 | SAVED, BANKS AND TEMPO | SAVE worked |
 | SAVE FAILED | The FM-1 couldn't write its memory. Try SAVE again; if it keeps failing, reinstall Tidepool |
 | SURPRISE IN 3 / 2 / 1 | Holding HOME: keep holding for a random mix |
@@ -43,7 +46,7 @@
 | NEW LOOP n, REC AGAIN: COUNT-IN | Set up in pool n; REC again to start the count-in |
 | COUNT-IN FROM THE NEXT BAR | Armed: one bar of count-in, then recording |
 | RECORDING, REC: DONE GLO: CANCEL | Recording now: REC keeps it, GLO throws it away |
-| LOOP n SAVED, PLAYING / SAVED - PLAY: HEAR IT | Kept; it plays on, or PLAY brings it in |
+| LOOP n SAVED, PLAYING | Kept and saved; it plays on, ready for the next loop to be recorded over it |
 | NOTHING RECORDED | The take had no notes; the pool stays empty |
 | CANCELLED / TAKE CANCELLED | The count-in or take was cancelled |
 | ALL 16 LOOPS USED, EDIT + KEY: DELETE | Every pool is full: delete one first |

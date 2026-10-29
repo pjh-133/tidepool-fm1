@@ -13,11 +13,22 @@ shot playhint.png
 release PLAY
 wait 30
 expect playhint 0
-# white key 5 (w4): Glass arp (loop 8) joins on the beat, and its row (Melodies, second on the keys) takes the knobs
+# at the start the clock is held at bar 1: a white key picks a loop, which waits (blinking) for PLAY
+expect held 1
+# white key 5 (w4): Glass arp (loop 8), and its row (Melodies, second on the keys) takes the knobs
 tapkey w4
 wait 30
 expect want8 1
 expect row 1
+wait 1500
+expect state8 2
+expect held 1
+leds
+shot waiting.png
+# PLAY: the clock starts from bar 1 and the loop comes in
+tap PLAY
+wait 30
+expect held 0
 wait 1500
 expect state8 5
 # PLAY held long enough for the chord hint, let go without turning KNOB1: nothing stops
@@ -27,13 +38,15 @@ expect playhint 1
 release PLAY
 wait 30
 expect want8 1
-# a quick tap still stops, and again brings the mix back
+# a quick tap still stops (the clock held again at bar 1), and again brings the mix back
 tap PLAY
 wait 30
 expect want8 0
+expect held 1
 tap PLAY
 wait 30
 expect want8 1
+expect held 0
 wait 1500
 leds
 shot glassarp.png
@@ -76,6 +89,7 @@ expect want8 0
 # every loop on: the whole bank, recorded
 wav allloops.wav
 strum 0 15 20
+tap PLAY
 wait 12000
 expect voices >8
 shot allloops.png
@@ -131,9 +145,11 @@ expect bank 0
 wait 1500
 expect bank 1
 expect want0 0
+expect held 1
 shot deepspace_ready.png
 # every Deep Space loop on
 strum 0 15 20
+tap PLAY
 wait 12000
 expect voices >6
 shot deepspace.png
@@ -142,6 +158,7 @@ spin PRESET 2
 wait 2000
 expect bank 3
 tapkey w0
+tap PLAY
 wait 4000
 shot neonrain.png
 spin PRESET 1
@@ -149,6 +166,7 @@ wait 2000
 expect bank 4
 expect want0 0
 strum 0 15 20
+tap PLAY
 wait 12000
 shot dungeon.png
 # SAVE, then a power cycle comes back on Dungeon Synth, quiet
@@ -164,5 +182,6 @@ spin PRESET -2
 wait 2000
 expect bank 2
 strum 0 15 20
+tap PLAY
 wait 12000
 shot forestfloor.png
