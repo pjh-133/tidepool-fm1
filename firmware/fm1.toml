@@ -1,0 +1,17 @@
+# Tidepool on the FM-1: build settings (fm1-base's tools/build.py; see ../docs/DEVELOPMENT.md)
+name = "TIDEPOOL"              # APP_NAME is in app.h; this names the build's files
+id_prefix = "FM-1_86"          # package identity: dev builds FM-1_8600, releases FM-1_86XXYYZZ (not registered anywhere:
+                               # change it if another firmware turns out to use 86)
+usb_manufacturer = "Tidepool"
+usb_product = "TIDEPOOL FM-1"
+# the engine: the same sources as the Mac bench and the browser emulator, at -O2, its big buffers in the pool
+o2 = ["../src/tp_engine.c", "../src/banks.c", "../src/bank_*.c", "../src/tp_harmony.c", "../src/tp_instruments.c"]
+o2_cflags = ["-DTP_MAXVOICE=32", "-DTP_METERS", "-DTP_POOL", "-DTP_PROFILE"]
+words = "words.tsv"
+font_full = ["T"]             # the small font with lower case too: the loop names, "Dm9"
+ble = false                    # no Bluetooth: it needs JieLi's full SDK and most of the RAM the engine uses
+# the site (tools/make_site.py): not published
+tagline = "Tidepool on the FM-1: twelve ambient scenes and a blank canvas"
+repo = "https://github.com/pjh-133/tidepool-fm1"
+licence = "MPL-2.0"
+credits = "Built on fm1-base (MPL-2.0) and felucca-bsp."

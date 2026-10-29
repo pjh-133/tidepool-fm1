@@ -1,0 +1,103 @@
+# Tidepool's autoplay (SEQ) in fm1-base's host simulator.
+#   firmware/build/host/tidepool_host firmware/tests/autoplay.txt firmware/build/host
+wait 800
+expect wanted 0
+# the textures (the fourth row) start at 25 %, the rest at 70 %
+expect u4_0 25
+expect u7_0 25
+expect u0_0 70
+# SEQ: something at once, then a loop a cycle (four bars: 13.3 s at 72 bpm): every row first, then a second in
+# each of the top three (the texture: one), so seven in seven cycles
+tap SEQ
+wait 30
+expect auto 1
+expect wanted 1
+leds
+wait 41000
+expect rowon0 >0
+expect rowon1 >0
+expect rowon2 >0
+expect rowon3 >0
+wait 45000
+expect rowon0 2
+expect rowon1 2
+expect rowon2 2
+expect rowon3 1
+expect wanted 7
+shot auto_full.png
+# a few minutes on: every row still going, none crowded (one texture), the textures seldom changed, the chords
+# moved on
+wav autoplay.wav
+wait 150000
+wavstop
+expect rowon0 >0
+expect rowon1 >0
+expect rowon2 >0
+expect rowon3 >0
+expect rowon0 <3
+expect rowon1 <3
+expect rowon2 <3
+expect rowon3 <2
+expect texmoves <3
+expect wanted >5
+expect wanted <8
+expect chordmoves >1
+shot auto_later.png
+# faster tempo: it keeps going
+spin SELECT 60
+wait 60000
+expect rowon0 >0
+expect rowon3 1
+expect wanted >5
+# ten minutes more at 132 bpm (about 110 cycles in all): the texture has changed now and then, never more than
+# once in 16 cycles
+wait 600000
+expect rowon3 1
+expect texmoves >0
+expect texmoves <8
+expect wanted >5
+expect rowon0 <3
+expect rowon1 <3
+expect rowon2 <3
+# SEQ again: the ending, two loops out at once while more than four play, then fewer each cycle (four bars: 7.3 s
+# at 132 bpm) until none
+expect wanted >5
+tap SEQ
+wait 30
+expect auto 2
+expect wanted <6
+shot auto_ending.png
+wait 7300
+expect wanted <4
+wait 7300
+expect wanted <3
+expect rowon0 1
+expect rowon2 0
+wait 14600
+expect wanted 0
+expect auto 0
+wait 8000
+expect voices 0
+# SEQ: autoplay again; SEQ, then SEQ during the ending: autoplay goes on
+tap SEQ
+wait 30
+expect auto 1
+wait 30000
+tap SEQ
+wait 30
+expect auto 2
+tap SEQ
+wait 30
+expect auto 1
+# PLAY while autoplaying: everything stops at once, autoplay off
+tap PLAY
+wait 30
+expect auto 0
+expect wanted 0
+# the Blank Canvas, nothing recorded: SEQ says so
+spin PRESET 12
+wait 1500
+expect bank 12
+tap SEQ
+wait 30
+expect auto 0

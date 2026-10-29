@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tidepool FM-1 emulator</title>
+<style>
+:root {
+  --bg: #f4f3ef; --panel: #ffffff; --ink: #1d1f22; --muted: #62666d; --line: #dcdad3;
+  --accent: #2c7a7b; --accent-ink: #ffffff; --warn: #b4531a;
+  /* the device itself is the same in both themes: it is a grey object */
+  --body: #45484d; --body-edge: #2b2d31; --well: #232528; --cap: #2e3034; --cap-hi: #3a3d42;
+  --label: #b9bcc2; --knob: #1f2124; --knob-rim: #56595f; --led-off: #3b3e43;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #15171a; --panel: #1e2125; --ink: #e8e8ea; --muted: #a0a4ab; --line: #33373d; --accent: #4fb3b3; --accent-ink: #0d1517; --warn: #e08a52; }
+}
+:root[data-theme="dark"] { --bg: #15171a; --panel: #1e2125; --ink: #e8e8ea; --muted: #a0a4ab; --line: #33373d; --accent: #4fb3b3; --accent-ink: #0d1517; --warn: #e08a52; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 1.5rem; margin: 0 0 4px; letter-spacing: -0.01em; }
+.lede { color: var(--muted); margin: 0 0 18px; max-width: 75ch; }
+
+/* ---- the FM-1: laid out on a 1000 x 580 grid, in container units so it scales as one object ---- */
+.fm1-wrap { container-type: inline-size; width: 100%; margin-bottom: 20px; }
+.fm1 { position: relative; width: 100cqw; height: 58cqw; background: var(--body); border: 0.25cqw solid var(--body-edge); border-radius: 3.2cqw; user-select: none; -webkit-user-select: none; box-shadow: 0 1cqw 3cqw rgba(0,0,0,.25); }
+.fm1 button { touch-action: none; }
+.at { position: absolute; transform: translate(-50%, -50%); }
+.lbl { position: absolute; transform: translateX(-50%); font: 600 1.25cqw/1 system-ui, sans-serif; letter-spacing: .06em; color: var(--label); white-space: nowrap; pointer-events: none; }
+.well { position: absolute; background: var(--well); border-radius: 1.6cqw; }
+
+.enc { width: 5.2cqw; height: 5.2cqw; border-radius: 50%; background: var(--knob); border: .35cqw solid var(--knob-rim); cursor: ns-resize; padding: 0; box-shadow: 0 .4cqw .8cqw rgba(0,0,0,.35); }
+.enc .dot { position: absolute; left: 50%; top: 50%; width: .5cqw; height: 1.5cqw; margin: -2cqw 0 0 -.25cqw; border-radius: .3cqw; background: #e8e8ea; transform-origin: 50% 2cqw; }
+.enc:focus-visible, .btn-cap:focus-visible, .key:focus-visible { outline: .35cqw solid #4fb3b3; outline-offset: .35cqw; }
+
+.screen { position: absolute; left: 25cqw; top: 2.8cqw; width: 24.2cqw; height: 24.2cqw; background: #0b0c0e; border-radius: 1.4cqw; padding: .8cqw; }
+.screen canvas { width: 100%; height: 100%; display: block; image-rendering: pixelated; border-radius: .4cqw; }
+
+.btn-cap { width: 5.6cqw; height: 4.4cqw; border-radius: .9cqw; background: var(--cap); border: .2cqw solid var(--cap-hi); color: var(--label); font: 600 1.05cqw/1.05 system-ui, sans-serif; letter-spacing: .05em; cursor: pointer; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .3cqw; }
+.btn-cap .led { width: 1.4cqw; height: .45cqw; border-radius: .3cqw; background: var(--led-off); }
+.btn-cap.on .led { background: var(--lc, #e8e8ea); box-shadow: 0 0 .8cqw var(--lc, #e8e8ea); }
+.btn-cap.dim .led { background: color-mix(in srgb, var(--lc, #e8e8ea) 35%, var(--led-off)); }
+.btn-cap.down { background: var(--cap-hi); transform: translate(-50%, -50%) scale(.96); }
+
+.keybed { position: absolute; left: 1.2cqw; top: 32.8cqw; width: 97.6cqw; height: 23.6cqw; background: #4a3f42; border-radius: 2cqw; border: .2cqw solid #5a4e51; }
+.key { width: 4.6cqw; height: 9.6cqw; border-radius: 2.3cqw; background: #5d5053; border: .2cqw solid #6c5e61; cursor: pointer; padding: 0; box-shadow: 0 .3cqw .6cqw rgba(0,0,0,.3); }
+.key.black { width: 4.2cqw; height: 8.4cqw; background: #554a4d; }
+.key .bar { position: absolute; left: 50%; top: 18%; bottom: 18%; width: .55cqw; margin-left: -.275cqw; border-radius: .3cqw; background: #7a6d70; }
+.key.on .bar { background: var(--lc); box-shadow: 0 0 1cqw var(--lc); }
+.key.blink .bar { background: var(--lc); animation: blink .5s steps(1) infinite; }
+@keyframes blink { 50% { background: #7a6d70; box-shadow: none; } }
+.key.down { transform: translate(-50%, -50%) scale(.97); filter: brightness(1.12); }
+.keyname { position: absolute; transform: translateX(-50%); font: 600 .95cqw/1 system-ui, sans-serif; color: #c9bcbf; pointer-events: none; text-align: center; white-space: nowrap; }
+
+/* ---- below the device ---- */
+.cols { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 860px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+.panel h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin: 0 0 10px; }
+table.map { width: 100%; border-collapse: collapse; font-size: .9rem; }
+table.map td { padding: 5px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+table.map td:first-child { font-weight: 600; width: 34%; padding-right: 14px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.stat { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; }
+.stat b { display: block; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.stat span { font-size: .75rem; color: var(--muted); }
+.stat.warn b { color: var(--warn); }
+.row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+select, .btn { font: inherit; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); }
+.btn { cursor: pointer; }
+.btn.solid { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+select:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.mini { font-size: .8rem; color: var(--muted); margin: 10px 0 0; }
+kbd { font: 600 .8em/1 ui-monospace, monospace; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 1px 5px; }
+.startbar { display: flex; align-items: center; gap: 12px; margin: -6px 0 14px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Tidepool FM-1 emulator</h1>
+  <p class="lede">The Shallows bank running on the C port, on a to-scale FM-1 front panel. Drag a knob up or down (or scroll over it), and click the keys and buttons. The sound is the port's own; the CPU figure is an estimate from the Mac benchmark.</p>
+  <div class="startbar"><button class="btn solid" id="start" type="button">Start sound</button><span class="mini" id="startNote" style="margin:0">Or press any key on the panel.</span></div>
+
+  <div class="fm1-wrap"><div class="fm1" id="fm1" role="group" aria-label="FM-1 front panel"></div></div>
+
+  <div class="cols">
+    <section class="panel" aria-labelledby="mapHead">
+      <h2 id="mapHead">What the controls do</h2>
+      <table class="map">
+        <tr><td>White keys</td><td>The 16 loops, left to right in rows of four: Drones, Textures, Melodies, Beats. The key light is on while a loop plays and blinks while it waits for the next beat.</td></tr>
+        <tr><td>KNOB1–4</td><td>The selected setting for the four loops in the selected row. The row's bars on the screen show the values.</td></tr>
+        <tr><td>OCT− / OCT+</td><td>Which setting the knobs change: Volume, Attack, Decay, Reverb, Echo, Pan (shown at the bottom left of the screen).</td></tr>
+        <tr><td>ALGORITHM</td><td>Which row the knobs control. Pressing a key also selects its row.</td></tr>
+        <tr><td>SELECT</td><td>Tempo, 56–140 bpm.</td></tr>
+        <tr><td>MASTER</td><td>Main volume.</td></tr>
+        <tr><td>PLAY/STOP</td><td>Stops everything. Press again to bring back the same mix.</td></tr>
+        <tr><td>HOME (hold 3 s)</td><td>Surprise me: a random mix, as in the web app. A countdown shows while you hold it; let go early and nothing happens.</td></tr>
+        <tr><td>PRESETS</td><td>Bank. Only Shallows is ported.</td></tr>
+        <tr><td>Black keys, other buttons</td><td>Not used in this sketch: the screen says so.</td></tr>
+      </table>
+      <p class="mini">Computer keys: <kbd>1</kbd>–<kbd>4</kbd> <kbd>Q</kbd>–<kbd>R</kbd> <kbd>A</kbd>–<kbd>F</kbd> <kbd>Z</kbd>–<kbd>V</kbd> loops, <kbd>Space</kbd> PLAY/STOP, <kbd>[</kbd> <kbd>]</kbd> row, <kbd>,</kbd> <kbd>.</kbd> setting, <kbd>-</kbd> <kbd>=</kbd> tempo. A focused knob turns with the arrow keys.</p>
+    </section>
+
+    <section class="panel" aria-labelledby="statHead">
+      <h2 id="statHead">Engine (not on the device)</h2>
+      <div class="stats">
+        <div class="stat"><b id="sVoices">0</b><span>voices now</span></div>
+        <div class="stat"><b id="sPeak">0</b><span>peak voices</span></div>
+        <div class="stat"><b id="sNotes">0</b><span>notes started</span></div>
+        <div class="stat" id="stolenBox"><b id="sStolen">0</b><span>notes stolen</span></div>
+        <div class="stat"><b id="sCpu">11%</b><span>FM-1 CPU (est.)</span></div>
+      </div>
+      <div class="row">
+        <label>Voice limit
+          <select id="limit">
+            <option value="8">8 (Felucca's)</option><option value="12">12</option><option value="16">16</option>
+            <option value="24">24</option><option value="32" selected>32</option><option value="64">64</option>
+          </select>
+        </label>
+        <button class="btn" id="reset" type="button">Reset counts</button>
+      </div>
+      <p class="mini">The CPU estimate adds each sounding loop's measured cost to the effects' 10.8 %. The costs are kernel instruction counts on the Mac at 1.7 % of the FM-1 per 100 instructions per sample (Felucca's calibration), with no voice limit; a lower limit costs less.</p>
+    </section>
+  </div>
+</main>
+
+<script>
+(() => {
+  'use strict';
+  const LOOP_KEYS = ['1', '2', '3', '4', 'q', 'w', 'e', 'r', 'a', 's', 'd', 'f', 'z', 'x', 'c', 'v'];
+  const FAMS = ['DRONES', 'TEXTURES', 'MELODIES', 'BEATS'];
+  const FAM_RGB = ['#8796ec', '#5cc2b5', '#e0ab4f', '#e07890'];
+  const CHORDS = ['Dm9', 'B♭maj7', 'Fmaj7', 'C6/9'];
+  const BANKS = ['Shallows', 'Deep Space', 'Forest Floor', 'Neon Rain', 'Dungeon Synth', 'Blank Canvas 1', 'Blank Canvas 2', 'Blank Canvas 3', 'Blank Canvas 4', 'Blank Canvas 5'];
+  const WHITE = ['F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5', 'D5', 'E5', 'F5', 'G5'];
+  const BLACK_AFTER = [0, 1, 2, 4, 5, 7, 8, 9, 11, 12, 14];          /* the white key each black key follows */
+  const BLACK_NAME = ['F#3', 'G#3', 'A#3', 'C#4', 'D#4', 'F#4', 'G#4', 'A#4', 'C#5', 'D#5', 'F#5'];
+  /* each loop alone, % of the FM-1 (tp_bench solo), and the effects */
+  const COST = [2.5, 4.1, 5.9, 1.5, 2.0, 2.4, 1.3, 1.4, 4.6, 2.2, 1.8, 4.9, 0.8, 0.9, 0.7, 0.9], FX_COST = 10.8;
+  const $ = (id) => document.getElementById(id);
+  /* what KNOB1-4 change (OCT- / OCT+), in the engine's order (tp_engine.h TP_P_*). The knob moves u, 0..1 in
+     2 % detents, as the web app's sliders; to / from map it to the value, fmt shows it as the web app does. */
+  const lin = { to: (v) => v, from: (u) => u };
+  const SETTINGS = [
+    { name: 'VOLUME', ...lin, fmt: (v) => Math.round(v * 100) + '%' },
+    { name: 'ATTACK', ...lin, fmt: (v) => (v ? '+' + (v * v * 2.5).toFixed(1) + ' s' : 'natural') },
+    { name: 'DECAY', ...lin, fmt: (v) => (Math.abs(v - 0.5) < 0.005 ? 'natural' : Math.pow(2, (v - 0.5) * 4).toFixed(1) + '\u00D7') },
+    { name: 'REVERB', ...lin, fmt: (v) => Math.round(v * 100) + '%' },
+    { name: 'ECHO', ...lin, fmt: (v) => Math.round(v * 100) + '%' },
+    { name: 'PAN', to: (v) => (v + 1) / 2, from: (u) => { const y = u * 2 - 1; return Math.abs(y) < 0.06 ? 0 : y; },
+      fmt: (v) => (v === 0 ? 'centre' : (v < 0 ? 'L ' : 'R ') + Math.round(Math.abs(v) * 100) + '%') },
+  ];
+
+  let ctx = null, node = null, loops = null, status = null, starting = null;
+  let bpm = 72, master = 0.8, row = 0, bank = 0, limit = 32, lastSet = [], setting = 0;
+  const wantNow = new Array(16).fill(false);
+  let params = Array.from({ length: 16 }, () => [0.7, 0, 0.5, 0.35, 0, 0]);   /* replaced by the engine's own defaults */
+  let toast = null;                                   /* what the screen shows over home for a moment */
+  const say = (title, value) => { toast = { title, value: value == null ? '' : String(value), until: performance.now() + 1400 }; };
+
+  /* ---------------- the panel ---------------- */
+  const fm1 = $('fm1');
+  const U = (v) => (v / 10) + 'cqw';                  /* 1000-unit grid -> container units */
+  function el(tag, cls, x, y, html) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (x != null) { e.style.left = U(x); e.style.top = U(y); }
+    if (html != null) e.innerHTML = html;
+    fm1.appendChild(e);
+    return e;
+  }
+  function label(text, x, y) { const e = el('div', 'lbl', x, y); e.textContent = text; return e; }
+  function well(x, y, w, h) { el('div', 'well').style.cssText = `left:${U(x)};top:${U(y)};width:${U(w)};height:${U(h)}`; }
+  function pressable(b, onPress) {                    /* pointer or keyboard; shows the press */
+    b.type = 'button';
+    b.addEventListener('pointerdown', (e) => { e.preventDefault(); b.classList.add('down'); b.focus({ preventScroll: true }); onPress(); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => b.addEventListener(ev, () => b.classList.remove('down')));
+    b.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); onPress(); } });
+  }
+
+  well(22, 18, 208, 214);
+  well(522, 18, 456, 108);
+  well(538, 150, 406, 130);
+  well(42, 244, 158, 48);
+
+  const screenBox = el('div', 'screen', null, null, '<canvas width="240" height="240" role="img" aria-label="FM-1 screen"></canvas>');
+  const scr = screenBox.querySelector('canvas').getContext('2d');
+
+  /* encoders: endless, with detents. Drag up/down (6 px a detent), scroll, or arrow keys when focused. */
+  function encoder(name, x, y, onTurn) {
+    const b = el('button', 'enc at', x, y, '<span class="dot"></span>');
+    b.type = 'button';
+    b.setAttribute('aria-label', name + ' encoder');
+    label(name, x, y - 52);
+    const dot = b.querySelector('.dot');
+    let angle = 0, acc = 0, lastY = 0, dragging = false, wheel = 0;
+    const turn = (n) => { angle += n * 18; dot.style.transform = `rotate(${angle}deg)`; start(); onTurn(n); };
+    b.addEventListener('pointerdown', (e) => { dragging = true; lastY = e.clientY; acc = 0; b.setPointerCapture(e.pointerId); e.preventDefault(); b.focus({ preventScroll: true }); start(); });
+    b.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      acc += lastY - e.clientY; lastY = e.clientY;
+      while (acc >= 6) { acc -= 6; turn(1); }
+      while (acc <= -6) { acc += 6; turn(-1); }
+    });
+    b.addEventListener('pointerup', () => { dragging = false; });
+    b.addEventListener('pointercancel', () => { dragging = false; });
+    b.addEventListener('wheel', (e) => { e.preventDefault(); wheel += e.deltaY; while (wheel <= -30) { wheel += 30; turn(1); } while (wheel >= 30) { wheel -= 30; turn(-1); } }, { passive: false });
+    b.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); turn(1); }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); turn(-1); }
+    });
+    return b;
+  }
+
+  /* MASTER: an ordinary pot, -135..+135 degrees */
+  (function masterPot() {
+    const x = 66, y = 75, b = el('button', 'enc at', x, y, '<span class="dot"></span>');
+    b.type = 'button'; b.setAttribute('aria-label', 'MASTER volume'); b.setAttribute('role', 'slider');
+    b.setAttribute('aria-valuemin', '0'); b.setAttribute('aria-valuemax', '100');
+    label('MASTER', x, y - 52);
+    const dot = b.querySelector('.dot');
+    const set = (v, show) => {
+      master = Math.min(1, Math.max(0, v));
+      dot.style.transform = `rotate(${-135 + 270 * master}deg)`;
+      b.setAttribute('aria-valuenow', String(Math.round(master * 100)));
+      send({ t: 'master', v: master });
+      if (show) say('MASTER', Math.round(master * 100) + '%');
+    };
+    set(master, false);
+    let dragging = false, lastY = 0;
+    b.addEventListener('pointerdown', (e) => { dragging = true; lastY = e.clientY; b.setPointerCapture(e.pointerId); e.preventDefault(); b.focus({ preventScroll: true }); start(); });
+    b.addEventListener('pointermove', (e) => { if (dragging) { set(master + (lastY - e.clientY) / 200, true); lastY = e.clientY; } });
+    b.addEventListener('pointerup', () => { dragging = false; });
+    b.addEventListener('pointercancel', () => { dragging = false; });
+    b.addEventListener('wheel', (e) => { e.preventDefault(); set(master - e.deltaY / 1500, true); }, { passive: false });
+    b.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { e.preventDefault(); e.stopPropagation(); set(master + 0.02, true); }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { e.preventDefault(); e.stopPropagation(); set(master - 0.02, true); }
+    });
+  })();
+
+  encoder('SELECT', 175, 75, (n) => setTempo(bpm + n));
+  encoder('PRESETS', 66, 182, (n) => {
+    bank = Math.min(BANKS.length - 1, Math.max(0, bank + n));
+    say('BANK ' + (bank + 1), bank === 0 ? BANKS[0] : BANKS[bank] + ': not ported');
+  });
+  encoder('ALGORITHM', 175, 182, (n) => setRow(row + n));
+  [562, 677, 795, 908].forEach((x, k) => encoder('KNOB' + (k + 1), x, 75, (n) => {
+    const l = row * 4 + k, S = SETTINGS[setting];
+    const u = Math.round(Math.min(1, Math.max(0, S.to(params[l][setting]) + n * 0.02)) * 100) / 100;
+    setParam(l, setting, S.from(u));
+    say((loops ? loops[l].name : 'LOOP') + ' \u00B7 ' + S.name, S.fmt(params[l][setting]));
+  }));
+
+  /* buttons */
+  const BUTTONS = [['FX', 'FX'], ['SEL', 'SEL'], ['ENV', 'ENV'], ['LFO', 'LFO'], ['EDIT', 'EDIT'], ['GLO', 'GLO'],
+                   ['HOME', 'HOME'], ['SAVE', 'SAVE'], ['ARP', 'ARP'], ['SEQ', 'SEQ'], ['PLAY', 'PLAY<br>STOP'], ['REC', 'REC']];
+  const BX = [578, 644, 708, 772, 836, 900], btn = {};
+  BUTTONS.forEach(([id, txt], i) => {
+    const b = el('button', 'btn-cap at', BX[i % 6], i < 6 ? 186 : 250, `<span>${txt}</span><span class="led"></span>`);
+    b.setAttribute('aria-label', id === 'PLAY' ? 'PLAY / STOP' : id);
+    pressable(b, () => press(id));
+    btn[id] = b;
+  });
+  btn.PLAY.style.setProperty('--lc', '#4cc36a');
+  btn.HOME.style.setProperty('--lc', '#e8e8ea');
+  /* HOME held 3 s: surprise me, with a countdown (as the firmware) */
+  let homeT = 0, homeFired = false, homeLeft = 0;
+  const homeDown = () => { if (!homeT) { homeT = performance.now(); homeFired = false; homeLeft = 0; start(); } };
+  const homeUp = () => { if (homeT && !homeFired) say('SURPRISE', 'hold HOME 3 s'); homeT = 0; };
+  btn.HOME.addEventListener('pointerdown', homeDown);
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => btn.HOME.addEventListener(ev, homeUp));
+  btn.HOME.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) homeDown(); });
+  btn.HOME.addEventListener('keyup', (e) => { if (e.key === 'Enter' || e.key === ' ') homeUp(); });
+  function homeHold(now) {
+    if (!homeT || homeFired) return;
+    const held = now - homeT;
+    if (held >= 3000) { homeFired = true; surprise(); return; }
+    const left = 3 - Math.floor(held / 1000);
+    if (left !== homeLeft) { homeLeft = left; say('SURPRISE IN', String(left)); }
+  }
+  setInterval(() => homeHold(performance.now()), 50);   /* a timer, not the screen's frames (which pause when hidden) */
+  [['OCT−', 78, -1, 'OCT minus'], ['OCT+', 161, 1, 'OCT plus']].forEach(([name, x, d, aria]) => {
+    const b = el('button', 'btn-cap at', x, 267, `<span>${name}</span>`);
+    b.setAttribute('aria-label', aria);
+    b.style.width = U(70); b.style.height = U(36);
+    pressable(b, () => { start(); setSetting(setting + d); });
+  });
+
+  /* keys: 16 white (the loops), 11 black */
+  el('div', 'keybed');
+  const wx = (i) => 55 + i * 59.07, keyEl = [];
+  WHITE.forEach((name, i) => {
+    const k = el('button', 'key at', wx(i), 498, '<span class="bar"></span>');
+    k.style.setProperty('--lc', FAM_RGB[Math.floor(i / 4)]);
+    k.setAttribute('aria-label', `Key ${i + 1}, ${name}`);
+    pressable(k, () => toggle(i));
+    keyEl[i] = k;
+    const n = el('div', 'keyname', wx(i), 554); n.textContent = String(i + 1);
+  });
+  BLACK_AFTER.forEach((w, j) => {
+    const k = el('button', 'key black at', (wx(w) + wx(w + 1)) / 2, 394, '<span class="bar"></span>');
+    k.setAttribute('aria-label', BLACK_NAME[j] + ' (not used)');
+    pressable(k, () => { start(); say(BLACK_NAME[j], 'not used yet'); });
+  });
+  FAMS.forEach((f, i) => { const n = el('div', 'keyname', (wx(i * 4) + wx(i * 4 + 3)) / 2, 341); n.textContent = f; n.style.color = FAM_RGB[i]; });
+
+  /* ---------------- behaviour ---------------- */
+  function send(m) { if (node) node.port.postMessage(m); }
+  function setLoop(l, on) { wantNow[l] = on; send({ t: 'toggle', l, on }); }
+  function toggle(l) {
+    start();
+    setLoop(l, !wantNow[l]);
+    row = Math.floor(l / 4);                          /* the knobs follow the row you last touched */
+    if (loops) say(loops[l].name, wantNow[l] ? 'joins on the beat' : 'fading out');
+  }
+  function setParam(l, k, v) { params[l][k] = v; send({ t: 'param', l, k, v }); }
+  function setSetting(i) { setting = (i + SETTINGS.length) % SETTINGS.length; say('KNOBS', SETTINGS[setting].name); }
+  function setTempo(v) { bpm = Math.min(140, Math.max(56, v)); send({ t: 'bpm', v: bpm }); say('TEMPO', bpm + ' BPM'); }
+  function setRow(r) { row = Math.min(3, Math.max(0, r)); say('KNOBS', FAMS[row]); }
+  function press(id) {
+    start();
+    if (id === 'PLAY') {
+      const on = wantNow.map((w, l) => (w ? l : -1)).filter((l) => l >= 0);
+      if (on.length) { lastSet = on; on.forEach((l) => setLoop(l, false)); say('STOP', 'press again: same mix'); }
+      else if (lastSet.length) { lastSet.forEach((l) => setLoop(l, true)); say('PLAY', lastSet.length + ' loops'); }
+      else say('PLAY', 'pick loops on the keys');
+    } else if (id === 'HOME') { /* held: homeHold */ }
+    else say(id, 'not used yet');
+  }
+  function surprise() {                              /* the web app's Surprise me: 1-2 per family (0-2 beats) */
+    for (let l = 0; l < 16; l++) if (wantNow[l]) setLoop(l, false);
+    const pick = (fam, min, max) => {
+      const pool = [0, 1, 2, 3].map((i) => fam * 4 + i).sort(() => Math.random() - 0.5);
+      pool.slice(0, min + Math.floor(Math.random() * (max - min + 1))).forEach((l) => { setParam(l, 0, 0.4 + Math.random() * 0.5); setLoop(l, true); });
+    };
+    pick(0, 1, 2); pick(1, 1, 2); pick(2, 1, 2); pick(3, 0, 2);
+    say('SURPRISE', wantNow.filter(Boolean).length + ' loops');
+  }
+
+  /* ---------------- audio ---------------- */
+  const wasmBytes = fetch('tp.wasm', { cache: 'no-cache' }).then((r) => r.arrayBuffer());   /* always the latest build */
+  wasmBytes.then((buf) => {                          /* the loop names, from the engine itself */
+    const x = new WebAssembly.Instance(new WebAssembly.Module(buf), {}).exports, mem = new Uint8Array(x.memory.buffer);
+    const cstr = (p) => { let s = ''; while (mem[p]) s += String.fromCharCode(mem[p++]); return s; };
+    loops = [];
+    for (let l = 0; l < 16; l++) loops.push({ name: cstr(x.tpw_name(l)), fam: x.tpw_fam(l) });
+    x.tpw_load();
+    params = loops.map((_, l) => SETTINGS.map((S, k) => Math.round(x.tpw_param_default(l, k) * 1000) / 1000));
+    WHITE.forEach((n, i) => keyEl[i].setAttribute('aria-label', `Key ${i + 1}, ${n}: ${loops[i].name}`));
+  });
+  function start() { return starting || (starting = startAudio()); }
+  async function startAudio() {
+    ctx = new AudioContext({ sampleRate: 44100, latencyHint: 'interactive' });
+    const [wasm] = await Promise.all([wasmBytes, ctx.audioWorklet.addModule('worklet.js?' + Date.now())]);
+    node = new AudioWorkletNode(ctx, 'tidepool-fm1', { numberOfInputs: 0, outputChannelCount: [2], processorOptions: { wasm: wasm.slice(0), seed: (Math.random() * 4294967295) >>> 0 } });
+    node.connect(ctx.destination);
+    await new Promise((res) => {
+      node.port.onmessage = (e) => { if (e.data.t === 'hello') res(); else if (e.data.t === 'status') status = e.data; };
+    });
+    if (ctx.state !== 'running') await ctx.resume();
+    send({ t: 'bpm', v: bpm }); send({ t: 'limit', v: limit }); send({ t: 'master', v: master });
+    params.forEach((p, l) => p.forEach((v, k) => send({ t: 'param', l, k, v })));
+    wantNow.forEach((w, l) => { if (w) send({ t: 'toggle', l, on: true }); });   /* anything pressed while starting */
+    $('start').textContent = 'Sound on'; $('start').disabled = true; $('startNote').textContent = '';
+  }
+
+  $('start').addEventListener('click', start);
+  $('limit').addEventListener('change', (e) => { limit = +e.target.value; send({ t: 'limit', v: limit }); send({ t: 'reset' }); });
+  $('reset').addEventListener('click', () => send({ t: 'reset' }));
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+    const k = e.key.toLowerCase(), l = LOOP_KEYS.indexOf(k);
+    if (l >= 0) { e.preventDefault(); keyEl[l].classList.add('down'); setTimeout(() => keyEl[l].classList.remove('down'), 120); toggle(l); }
+    else if (k === ' ') { e.preventDefault(); press('PLAY'); }
+    else if (k === ',') setSetting(setting - 1);
+    else if (k === '.') setSetting(setting + 1);
+    else if (k === '[') setRow(row - 1);
+    else if (k === ']') setRow(row + 1);
+    else if (k === '-') { start(); setTempo(bpm - 1); }
+    else if (k === '=') { start(); setTempo(bpm + 1); }
+  });
+
+  /* ---------------- the 240 x 240 screen ---------------- */
+  function cpuNow() {
+    let c = FX_COST;
+    if (status) for (let l = 0; l < 16; l++) if (status.state[l] & 4) c += COST[l];
+    return c;
+  }
+  function text(s, x, y, size, color, weight, align) {
+    scr.font = `${weight || 400} ${size}px system-ui, sans-serif`; scr.fillStyle = color; scr.textAlign = align || 'left'; scr.fillText(s, x, y);
+  }
+  function drawScreen(now) {
+    const s = status, W = 240;
+    scr.textBaseline = 'top';
+    scr.fillStyle = '#0e0f11'; scr.fillRect(0, 0, W, W);
+    text('SHALLOWS', 8, 7, 13, '#e8e8ea', 700);
+    text(bpm + ' BPM', W - 8, 7, 13, '#9fd3cf', 700, 'right');
+    const step = s ? s.step : 0, bar = Math.floor((step % 64) / 16), within = (step % 16) / 16;
+    for (let i = 0; i < 4; i++) {                    /* the chord cycle */
+      const x = 8 + i * 57, y = 26;
+      scr.fillStyle = '#202226'; scr.fillRect(x, y, 53, 15);
+      if (i === bar && s) { scr.fillStyle = '#2c5f60'; scr.fillRect(x, y, 53 * within, 15); }
+      text(CHORDS[i], x + 4, y + 3, 10, i === bar && s ? '#e8e8ea' : '#6f737a');
+    }
+    for (let l = 0; l < 16; l++) {                   /* the loops: one row per family */
+      const col = l % 4, r = Math.floor(l / 4), x = 8 + col * 57, y = 48 + r * 40, st = s ? s.state[l] : 0;
+      const lvl = s ? Math.min(1, Math.sqrt(s.level[l]) * 6) : 0, sel = r === row;
+      scr.fillStyle = sel ? '#24272c' : '#17181b'; scr.fillRect(x, y, 53, 34);
+      if (st & 4) { scr.globalAlpha = 0.4 + 0.6 * lvl; scr.fillStyle = FAM_RGB[r]; scr.fillRect(x, y, 53, 34); scr.globalAlpha = 1; }   /* 40 % .. the full colour */
+      if ((st & 2) && Math.floor(now / 250) % 2) { scr.strokeStyle = FAM_RGB[r]; scr.lineWidth = 1; scr.strokeRect(x + 0.5, y + 0.5, 52, 33); }
+      const words = loops ? loops[l].name.split(' ') : [''];
+      const ink = st & 4 ? '#ffffff' : sel ? '#c9cbcf' : '#80848b';
+      if (st & 4) { text(words[0], x + 5, y + 5, 9, 'rgba(0,0,0,.55)', 600); if (words[1]) text(words[1], x + 5, y + 15, 9, 'rgba(0,0,0,.55)', 600); }   /* a shadow under white */
+      text(words[0], x + 4, y + 4, 9, ink, 600); if (words[1]) text(words[1], x + 4, y + 14, 9, ink, 600);
+      if (sel) {                                      /* the selected row: the knobs' values */
+        const u = SETTINGS[setting].to(params[l][setting]), on = st & 4 ? '#ffffff' : FAM_RGB[r];
+        scr.fillStyle = st & 4 ? 'rgba(14,15,17,.35)' : '#33363b'; scr.fillRect(x + 4, y + 27, 45, 3);
+        scr.fillStyle = on;
+        if (setting === 5) { scr.fillRect(x + 26, y + 25, 1, 7); scr.fillRect(x + 4 + Math.round(43 * u), y + 25, 3, 7); }
+        else scr.fillRect(x + 4, y + 27, 45 * u, 3);
+      }
+    }
+    scr.fillStyle = FAM_RGB[row]; scr.fillRect(2, 48 + row * 40, 3, 34);   /* which row the knobs move */
+    const cpu = cpuNow();
+    text('\u25C2 ' + SETTINGS[setting].name + ' \u25B8', 8, 213, 11, FAM_RGB[row], 700);
+    for (let i = 0; i < SETTINGS.length; i++) { scr.fillStyle = i === setting ? '#e8e8ea' : '#3a3d42'; scr.fillRect(9 + i * 7, 228, 5, 3); }
+    text('CPU~', 120, 214, 10, '#6f737a', 700); text(Math.round(cpu) + '%', 150, 214, 10, cpu > 85 ? '#e08a52' : '#e8e8ea', 700);
+    scr.fillStyle = '#26282c'; scr.fillRect(182, 216, 50, 7);
+    scr.fillStyle = cpu > 85 ? '#e08a52' : '#4fb3b3'; scr.fillRect(182, 216, 50 * Math.min(1, cpu / 100), 7);
+    if (homeT && !homeFired) {                       /* HOME held: the countdown fills a bar */
+      scr.fillStyle = '#26282c'; scr.fillRect(8, 21, 224, 2);
+      scr.fillStyle = '#ffffff'; scr.fillRect(8, 21, 224 * Math.min(1, (now - homeT) / 3000), 2);
+    }
+    if (toast && now < toast.until) {                 /* what a control just did */
+      scr.fillStyle = 'rgba(14,15,17,.93)'; scr.fillRect(18, 84, 204, 70);
+      scr.strokeStyle = '#4fb3b3'; scr.lineWidth = 1; scr.strokeRect(18.5, 84.5, 203, 69);
+      text(toast.title.toUpperCase(), 120, 96, 12, '#9fd3cf', 700, 'center');
+      text(toast.value, 120, 118, toast.value.length > 18 ? 13 : 17, '#e8e8ea', 700, 'center');
+    }
+    if (!ctx) { scr.fillStyle = 'rgba(14,15,17,.75)'; scr.fillRect(0, 96, W, 46); text('PRESS ANY KEY', 120, 110, 14, '#e8e8ea', 700, 'center'); }
+  }
+
+  function frame(now) {
+    for (let l = 0; l < 16; l++) {
+      const st = status ? status.state[l] : (wantNow[l] ? 2 : 0), k = keyEl[l];
+      k.classList.toggle('on', (st & 1) === 1);
+      k.classList.toggle('blink', (st & 2) === 2);
+    }
+    btn.PLAY.classList.toggle('on', !!(status && status.state.some((st) => st & 1)));
+    btn.HOME.classList.toggle('on', !!(homeT && !homeFired));
+    if (status) {
+      $('sVoices').textContent = status.voices; $('sPeak').textContent = status.peak;
+      $('sNotes').textContent = status.notes; $('sStolen').textContent = status.stolen;
+      $('stolenBox').classList.toggle('warn', status.stolen > 0);
+      $('sCpu').textContent = Math.round(cpuNow()) + '%';
+    }
+    drawScreen(now);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

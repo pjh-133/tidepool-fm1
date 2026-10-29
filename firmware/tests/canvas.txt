@@ -1,0 +1,199 @@
+# Tidepool's Blank Canvas in fm1-base's host simulator: record, play, save, delete.
+#   firmware/build/host/tidepool_host firmware/tests/canvas.txt firmware/build/host
+wait 800
+# PRESET to the last bank: the Blank Canvas, every loop empty
+spin PRESET 12
+wait 900
+expect bank 12
+shot canvas_empty.png
+tapkey w0
+wait 30
+expect want0 0
+# GLO: recording mode; PRESET the instrument (Kalimba), KNOB1 a bar long
+tap GLO
+wait 30
+expect recmode 1
+spin PRESET 1
+wait 30
+expect instr 1
+spin K1 -1
+wait 30
+# REC: a new loop in slot 1; REC again: the count-in
+tap REC
+wait 30
+expect rs 1
+expect rslot 0
+shot canvas_setup.png
+tap REC
+wait 30
+expect rs 2
+wait 1200
+shot canvas_waiting.png
+wait 2200
+shot canvas_countin.png
+wait 3800
+expect rs 3
+# three notes with their velocities, then REC: kept, saved; nothing else plays, so it waits for PLAY
+tapkey 7 90
+wait 400
+tapkey 11 110
+wait 400
+tapkey 14 70
+wait 600
+shot canvas_take.png
+tap REC
+wait 100
+expect rs 0
+expect used0 1
+expect notes0 3
+expect want0 0
+shot canvas_kept.png
+tap PLAY
+wait 30
+expect want0 1
+wait 4000
+expect state0 5
+shot canvas_playing.png
+# a power cycle keeps the loop (saved when it was recorded, SAVE not pressed: the bank is the saved one, the first)
+reboot
+wait 800
+expect bank 0
+spin PRESET 12
+wait 900
+expect bank 12
+expect recmode 0
+expect used0 1
+expect notes0 3
+expect linstr0 1
+expect lbars0 1
+# loop 1 playing, a second loop recorded over it: it joins the mix at once
+tapkey w0
+wait 30
+expect want0 1
+tap GLO
+wait 30
+tap REC
+wait 30
+expect rslot 1
+tap REC
+wait 7200
+expect rs 3
+tapkey 0 100
+wait 300
+tapkey 12 100
+wait 300
+tap REC
+wait 100
+expect used1 1
+expect notes1 2
+expect want1 1
+tap GLO
+wait 30
+expect recmode 0
+# EDIT held: loop 2 picked, then deleted with the same key
+press EDIT
+wait 30
+tapkey w1
+wait 30
+expect delsel 1
+shot canvas_delete.png
+tapkey w1
+wait 30
+expect used1 0
+release EDIT
+wait 30
+# EDIT held: loop 1 picked, another key cancels
+press EDIT
+wait 30
+tapkey w0
+wait 30
+expect delsel 0
+tapkey w2
+wait 30
+expect delsel -1
+release EDIT
+wait 30
+expect used0 1
+reboot
+wait 800
+expect used0 1
+expect used1 0
+spin PRESET 12
+wait 900
+# GLO during a take cancels it: the slot stays free
+tap GLO
+wait 30
+tap REC
+tap REC
+wait 7200
+expect rs 3
+tapkey 5 100
+wait 200
+tap GLO
+wait 100
+expect recmode 0
+expect used1 0
+# playback: OCT- reaches INSTRUMENT (the canvas's seventh setting); KNOB1 changes loop 1's; SAVE keeps it
+tap OCT-
+wait 30
+expect setting 6
+spin K1 2
+wait 30
+expect linstr0 3
+tap SAVE
+wait 50
+expect dirty 0
+reboot
+wait 800
+expect bank 12
+expect linstr0 3
+# REC and GLO in a preset bank only say so; the setting goes back to the presets' six
+spin PRESET -12
+wait 900
+expect bank 0
+expect setting 0
+tap GLO
+wait 30
+expect recmode 0
+# KNOB2: snap goes on to BAR (a held chord fills its bar), and no further
+spin PRESET 12
+wait 900
+expect bank 12
+tap GLO
+wait 30
+expect snap 1
+spin K2 1
+wait 30
+spin K2 1
+wait 30
+expect snap 3
+spin K2 1
+wait 30
+expect snap 3
+wait 1500
+shot canvas_snapbar.png
+# HOME leaves recording mode as GLO does, and cancels a take
+tap HOME
+wait 30
+expect recmode 0
+tap GLO
+wait 30
+expect recmode 1
+tap REC
+tap REC
+wait 7200
+expect rs 3
+tap HOME
+wait 100
+expect recmode 0
+expect rs 0
+expect used1 0
+# SEQ from recording mode: back to playback, autoplay brings in the recorded loop
+tap GLO
+wait 30
+expect recmode 1
+tap SEQ
+wait 30
+expect recmode 0
+expect auto 1
+expect want0 1

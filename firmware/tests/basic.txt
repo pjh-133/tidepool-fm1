@@ -1,0 +1,168 @@
+# Tidepool in fm1-base's host simulator:
+#   python3 base/tools/build.py firmware --host
+#   firmware/build/host/tidepool_host firmware/tests/basic.txt firmware/build/host
+wait 800
+shot boot.png
+# PLAY held a moment: the chords offered (a tap shows nothing); let go, the hint goes
+press PLAY
+wait 100
+expect playhint 0
+wait 400
+expect playhint 1
+shot playhint.png
+release PLAY
+wait 30
+expect playhint 0
+# white key 5 (w4): Glass arp (loop 8) joins on the beat, and its row (Melodies, second on the keys) takes the knobs
+tapkey w4
+wait 30
+expect want8 1
+expect row 1
+wait 1500
+expect state8 5
+# PLAY held long enough for the chord hint, let go without turning KNOB1: nothing stops
+press PLAY
+wait 600
+expect playhint 1
+release PLAY
+wait 30
+expect want8 1
+# a quick tap still stops, and again brings the mix back
+tap PLAY
+wait 30
+expect want8 0
+tap PLAY
+wait 30
+expect want8 1
+wait 1500
+leds
+shot glassarp.png
+# PLAY held + KNOB1: chord progression 3, from the next bar line; letting go of PLAY then stops nothing
+press PLAY
+wait 30
+spin K1 3
+wait 30
+release PLAY
+wait 30
+expect prog 3
+expect want8 1
+wait 3500
+shot chords.png
+# OCT+ three times: the knobs change reverb; KNOB1 (Glass arp) up three detents, 50 % -> 56 %
+tap OCT+
+tap OCT+
+tap OCT+
+wait 30
+expect setting 3
+spin K1 3
+wait 30
+expect u8_3 56
+expect dirty 1
+shot reverb.png
+# SELECT: the tempo up four
+spin SELECT 4
+wait 30
+expect bpm 76
+# SAVE, then a power cycle keeps the reverb and the tempo
+tap SAVE
+wait 50
+expect dirty 0
+reboot
+wait 800
+expect u8_3 56
+expect bpm 76
+expect prog 3
+expect want8 0
+# every loop on: the whole bank, recorded
+wav allloops.wav
+strum 0 15 20
+wait 12000
+expect voices >8
+shot allloops.png
+leds
+wavstop
+# PLAY stops everything; PLAY again brings the same mix back
+tap PLAY
+wait 30
+expect want0 0
+expect want15 0
+tap PLAY
+wait 30
+expect want0 1
+expect want15 1
+# HOME let go after a second: nothing changes (all 16 still asked), whether pressed on an even or an odd
+# millisecond (a press on an even one once fired the surprise at once)
+press HOME
+wait 30
+expect wanted 16
+wait 970
+release HOME
+wait 31
+press HOME
+wait 30
+expect wanted 16
+wait 970
+release HOME
+wait 30
+expect wanted 16
+# HOME held 3 s: the countdown, then a surprise mix (1-2 loops a family, 0-2 beats: 3 to 8 loops)
+press HOME
+wait 1500
+shot countdown.png
+leds
+wait 1600
+release HOME
+wait 30
+expect wanted >2
+expect wanted <9
+wait 2000
+shot surprise.png
+# REC no longer does anything but say so
+tap REC
+# a black key and an unused button only say so
+tapkey b3
+tap FX
+wait 30
+shot unused.png
+# PRESET: the next bank once the knob rests; everything fades out first, then Deep Space is ready
+spin PRESET 1
+wait 300
+expect bank 0
+wait 1500
+expect bank 1
+expect want0 0
+shot deepspace_ready.png
+# every Deep Space loop on
+strum 0 15 20
+wait 12000
+expect voices >6
+shot deepspace.png
+# two more detents (Neon Rain), then on to Dungeon Synth in one go
+spin PRESET 2
+wait 2000
+expect bank 3
+tapkey w0
+wait 4000
+shot neonrain.png
+spin PRESET 1
+wait 2000
+expect bank 4
+expect want0 0
+strum 0 15 20
+wait 12000
+shot dungeon.png
+# SAVE, then a power cycle comes back on Dungeon Synth, quiet
+tap SAVE
+wait 50
+reboot
+wait 800
+expect bank 4
+expect want0 0
+shot dungeon_boot.png
+# and back to Forest Floor
+spin PRESET -2
+wait 2000
+expect bank 2
+strum 0 15 20
+wait 12000
+shot forestfloor.png

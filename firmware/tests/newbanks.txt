@@ -1,0 +1,108 @@
+# The FM-1's own five banks: each with every loop on, its screen, and a recording.
+#   firmware/build/host/tidepool_host firmware/tests/newbanks.txt firmware/build/host
+wait 800
+spin PRESET 5
+wait 1500
+expect bank 5
+wav bank_aurora.wav
+strum 0 15 20
+wait 9000
+expect wanted 16
+expect voices >6
+shot bank_aurora.png
+wavstop
+tap PLAY
+wait 30
+expect wanted 0
+wait 3000
+shot bank_aurora_idle.png
+spin PRESET 1
+wait 1500
+expect bank 6
+wav bank_dunes.wav
+strum 0 15 20
+wait 9000
+expect wanted 16
+expect voices >6
+shot bank_dunes.png
+wavstop
+tap PLAY
+wait 30
+expect wanted 0
+wait 3000
+shot bank_dunes_idle.png
+spin PRESET 1
+wait 1500
+expect bank 7
+wav bank_zen.wav
+strum 0 15 20
+wait 9000
+expect wanted 16
+expect voices >6
+shot bank_zen.png
+wavstop
+tap PLAY
+wait 30
+expect wanted 0
+wait 3000
+shot bank_zen_idle.png
+spin PRESET 1
+wait 1500
+expect bank 8
+wav bank_clockwork.wav
+strum 0 15 20
+wait 9000
+expect wanted 16
+expect voices >6
+shot bank_clockwork.png
+wavstop
+tap PLAY
+wait 30
+expect wanted 0
+wait 3000
+shot bank_clockwork_idle.png
+spin PRESET 1
+wait 1500
+expect bank 9
+wav bank_cafe.wav
+strum 0 15 20
+wait 9000
+expect wanted 16
+expect voices >6
+shot bank_cafe.png
+wavstop
+tap PLAY
+wait 30
+expect wanted 0
+wait 3000
+shot bank_cafe_idle.png
+spin PRESET 1
+wait 1500
+expect bank 10
+wav bank_bonfire.wav
+strum 0 15 20
+wait 9000
+expect wanted 16
+expect voices >6
+shot bank_bonfire.png
+wavstop
+tap PLAY
+wait 30
+expect wanted 0
+wait 3000
+shot bank_bonfire_idle.png
+spin PRESET 1
+wait 1500
+expect bank 11
+wav bank_oldblood.wav
+strum 0 15 20
+wait 9000
+expect wanted 16
+expect voices >6
+shot bank_oldblood.png
+wavstop
+tap PLAY
+wait 30
+expect wanted 0
+wait 3000
+shot bank_oldblood_idle.png

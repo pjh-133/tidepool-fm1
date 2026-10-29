@@ -1,0 +1,85 @@
+# Settings saved by older firmwares, kept by this one (the canvas moving from sixth or eleventh to thirteenth).
+#   firmware/build/host/tidepool_host firmware/tests/migrate.txt firmware/build/host
+wait 800
+# TDP5, saved on the canvas: still the canvas, its settings with it; the presets' and the recorder's kept
+oldsettings 5 5
+reboot
+wait 800
+expect bank 12
+expect bpm 88
+expect u0_0 44
+expect instr 3
+expect snap 3
+expect oct 1
+spin PRESET -12
+wait 1500
+expect bank 0
+expect u0_0 33
+expect u4_0 70
+spin PRESET 2
+wait 1500
+expect bank 2
+expect prog 7
+# a new bank: its own defaults, textures at 25 %
+spin PRESET 3
+wait 1500
+expect bank 5
+expect u0_0 70
+expect u4_0 25
+# TDP5 saved on Neon Rain (bank 4): still there
+oldsettings 5 3
+reboot
+wait 800
+expect bank 3
+# TDP3 (no canvas): the five banks kept, their textures left at 70 % quieter
+oldsettings 3 1
+reboot
+wait 800
+expect bank 1
+expect bpm 88
+spin PRESET -1
+wait 1500
+expect u0_0 33
+expect u4_0 25
+spin PRESET 2
+wait 1500
+expect prog 7
+# saved again: this firmware's record, read back the same
+tap SAVE
+wait 50
+reboot
+wait 800
+expect bank 2
+expect prog 7
+expect bpm 88
+# TDP6 (ten banks, then the canvas), saved on the canvas: the canvas now thirteenth, every bank's settings kept
+oldsettings 6 10
+reboot
+wait 800
+expect bank 12
+expect bpm 88
+expect u0_0 44
+expect instr 3
+expect oct 1
+spin PRESET -3
+wait 1500
+expect bank 9
+expect u0_0 55
+spin PRESET -7
+wait 1500
+expect bank 2
+expect prog 7
+spin PRESET -2
+wait 1500
+expect u0_0 33
+# the two new banks: their own defaults
+spin PRESET 10
+wait 1500
+expect bank 10
+expect u0_0 70
+expect u4_0 25
+# TDP6 saved on Night Cafe: still there
+oldsettings 6 9
+reboot
+wait 800
+expect bank 9
