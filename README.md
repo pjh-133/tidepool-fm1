@@ -131,6 +131,27 @@ Don't unplug the FM-1 while it writes. The same page can put M-VAVE's own firmwa
 
 Your settings and recorded loops survive later updates of Tidepool.
 
+## Ask Claude about it
+
+Tidepool comes with a [Claude](https://claude.ai) skill. Once it's added, you can ask Claude things like "how do I
+record a drum loop?", "which bank has a cello?" or "what does ALL 16 LOOPS USED mean?" and get answers from how
+Tidepool actually works.
+
+- **Claude Code:** add this repository as a plugin marketplace, then install the plugin:
+
+  ```
+  /plugin marketplace add pjh-133/tidepool-fm1
+  /plugin install tidepool-fm1@tidepool-fm1
+  ```
+
+- **Claude.ai and the Claude desktop app:** download
+  [tidepool-fm1-skill.zip](https://github.com/pjh-133/tidepool-fm1/releases/latest/download/tidepool-fm1-skill.zip),
+  then upload it under Settings → Capabilities → Skills. (Custom skills need a plan that includes them; you may need
+  to switch skills on in that page first.)
+
+The skill is in [`plugin/skills/tidepool-fm1/`](plugin/skills/tidepool-fm1/): it only explains how to use Tidepool,
+and needs no access to anything else.
+
 ## Building it yourself
 
 To change Tidepool or build it from source, you build the firmware, then send it to the FM-1 over USB.
@@ -209,6 +230,7 @@ the same style. The engine, the banks, and how everything was measured and teste
 | `host/` | A Mac benchmark that renders the banks to WAV and estimates their cost on the FM-1 |
 | `web/` | An older browser emulator of the panel (first bank only); the [site's](https://pjh-133.github.io/tidepool-fm1/emu/) is the whole firmware |
 | `firmware/site/`, `firmware/docs/` | The website's front page and manual |
+| `plugin/` | The Claude skill (with `.claude-plugin/` at the top, the plugin marketplace for Claude Code) |
 | `base/` | [fm1-base](https://github.com/charlesvestal/fm1-base), the platform layer (git submodule) |
 
 ## Credits and licence

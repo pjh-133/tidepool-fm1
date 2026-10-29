@@ -14,6 +14,8 @@ risk, and the installer can put M-VAVE's own firmware back.
   the white keys.
 - [Install](install/): from Chrome or Edge, with the FM-1 connected by USB.
 - [Manual](manual/): the scenes, the controls, chords, autoplay, and recording on the Blank Canvas.
+- [Ask Claude](https://github.com/pjh-133/tidepool-fm1#ask-claude-about-it): a Claude skill that answers questions
+  about playing Tidepool.
 - [Download {{PKG}}](firmware/{{PKG}}): for the command-line installer, `python3 tools/fm1_install.py {{PKG}}`.
 - [Source](https://github.com/pjh-133/tidepool-fm1): MPL-2.0. Built on
   [fm1-base](https://github.com/charlesvestal/fm1-base) by Charles Vestal and felucca-bsp, from Felucca by Leo

@@ -1,0 +1,10 @@
+{
+  "name": "tidepool-fm1",
+  "version": "1.0.1",
+  "description": "Ask Claude how to play, record with and troubleshoot Tidepool, the ambient-loop firmware for the M-VAVE FM-1.",
+  "author": { "name": "pjh-133", "url": "https://github.com/pjh-133" },
+  "homepage": "https://pjh-133.github.io/tidepool-fm1/",
+  "repository": "https://github.com/pjh-133/tidepool-fm1",
+  "license": "MPL-2.0",
+  "keywords": ["fm1", "m-vave", "synthesizer", "ambient", "firmware"]
+}

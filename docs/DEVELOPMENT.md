@@ -236,6 +236,7 @@ python3 base/tools/build.py firmware --host
 firmware/build/host/tidepool_host firmware/tests/basic.txt firmware/build/host   # screenshots and a WAV there
 firmware/build/host/tidepool_host firmware/tests/canvas.txt firmware/build/host  # the Blank Canvas
 firmware/build/host/tidepool_host firmware/tests/instruments.txt firmware/build/host  # its 36 instruments
+python3 tools/gen_skill.py --check   # the Claude skill's bank and instrument lists match the sources
 firmware/build/host/tidepool_host firmware/tests/autoplay.txt firmware/build/host  # autoplay (SEQ)
 firmware/build/host/tidepool_host firmware/tests/newbanks.txt firmware/build/host  # the FM-1's own five banks
 firmware/build/host/tidepool_host firmware/tests/migrate.txt firmware/build/host   # older settings kept
@@ -481,3 +482,22 @@ AC79_SDK=~/.jieli/ac79-sdk JIELI_TOOLCHAIN=~/.jieli/toolchain base/tools/publish
 
 A release's identity is `FM-1_86` and the version's six digits (1.0.0: `FM-1_86010000`); the installer checks it after
 writing. Settings and recorded loops are kept across releases.
+
+## The Claude skill (`plugin/`)
+
+`plugin/skills/tidepool-fm1/` is a Claude skill that answers questions about using Tidepool: `SKILL.md` (when to use
+it, how to answer, the essentials) and `references/` (controls, banks, the Blank Canvas, instruments,
+troubleshooting). `plugin/.claude-plugin/plugin.json` makes it a Claude Code plugin, and `.claude-plugin/marketplace.json`
+at the top lets Claude Code add this repository as a marketplace (`claude plugin validate .` checks both).
+
+`references/banks.md` and `references/instruments.md` are generated from the sources by `tools/gen_skill.py` (a new
+bank also needs its line in the script's `MOOD`). Run it after changing a bank, a loop's name or an instrument;
+`tools/gen_skill.py --check` fails while they are out of date. The other references are written by hand: keep them
+in step with a change to the controls or the screen's messages, and bump `version` in `plugin.json`.
+
+For Claude.ai, the skill goes up as a zip attached to each GitHub release (the README links to the latest):
+
+```
+(cd plugin/skills && zip -qr -X ../../build/tidepool-fm1-skill.zip tidepool-fm1 -x '*.DS_Store')
+gh release create v1.0.1 firmware/build/tidepool-1.0.1.fwsc build/tidepool-fm1-skill.zip
+```

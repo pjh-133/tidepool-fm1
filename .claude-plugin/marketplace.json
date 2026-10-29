@@ -1,0 +1,12 @@
+{
+  "name": "tidepool-fm1",
+  "owner": { "name": "pjh-133", "url": "https://github.com/pjh-133" },
+  "metadata": { "description": "Tidepool for the M-VAVE FM-1: a Claude skill for playing and troubleshooting it." },
+  "plugins": [
+    {
+      "name": "tidepool-fm1",
+      "source": "./plugin",
+      "description": "Ask Claude how to play, record with and troubleshoot Tidepool, the ambient-loop firmware for the M-VAVE FM-1."
+    }
+  ]
+}
