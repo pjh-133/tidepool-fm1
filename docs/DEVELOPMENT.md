@@ -150,7 +150,7 @@ animated banner behind its name in pixel letters, and the shape of its pools.
 | Clockwork | two gears turning against each other, a pendulum swinging | gear teeth along the edges |
 | Night Café | a cup of coffee on its saucer, steam rising, a string of lights | a café booth: rounded top, square foot |
 | Bonfire | ruined towers against an ashen dusk, a bonfire with a sword thrust in it, embers rising | heater shields |
-| Old Blood | gothic spires under a great moon that slowly reddens, fog in the streets, a crow crossing | lancet windows: a pointed top |
+| Old Blood | gothic spires under a great moon that slowly turns blood red and back, lit windows (one guttering, each going dark now and then), fog rolling across the roofs, a crow crossing | lancet windows: a pointed top |
 
 All of it is drawn procedurally into fm1-base's canvas in the main loop, the banner about ten times a second (4 ms of
 the screen's time each).

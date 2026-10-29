@@ -2,7 +2,7 @@
  * bank's look, after the web app's themes: its palette, an animated banner behind its name (Shallows' light shafts
  * and bubbles, Deep Space's stars, Forest Floor's pines and fireflies, Neon Rain's skyline in the rain, Dungeon
  * Synth's stones and embers; Aurora's northern lights over snow, Dunes' caravan at dusk, Zen Garden's mountain and
- * falling petals, Clockwork's turning gears, Night Cafe's steaming cup of coffee, Bonfire's fire among ruins, Old Blood's moon over spires; the Blank Canvas's watercolours on
+ * falling petals, Clockwork's turning gears, Night Cafe's steaming cup of coffee, Bonfire's fire among ruins, Old Blood's blood moon over spires; the Blank Canvas's watercolours on
  * paper) and the shape of its pools. Everything is drawn procedurally into fm1-base's canvas
  * (gfx.c: cv_rect, cv_pset), in the main loop. Included by app.c. */
 
@@ -495,14 +495,18 @@ static void banner_bonfire(uint32_t t)
     }
 }
 
-/* a gothic city at night: spires and gables black against a sky going red, a great pale moon in the gap, fog drifting
- * along the streets, a crow crossing now and then */
+/* a gothic city at night: spires and gables black against the sky, a great moon in the gap that slowly turns blood
+ * red and back (the sky reddening with it), lit windows (one now and then flickering, each going dark a while), fog
+ * rolling in front of the roofs, a crow crossing now and then */
 static void banner_oldblood(uint32_t t)
 {
-    int32_t x, y, i;
-    int32_t blush = px_tri(t, 24000u) / 3;    /* the moon reddening and paling, slowly */
+    static const uint16_t ROOF = RGB(10, 6, 10);
+    int32_t x, y, i, top[BN_W];
+    int32_t tri = px_tri(t, 40000u);          /* the blood moon: pale a while, red a while, slowly between */
+    int32_t blood = tri < 70 ? 0 : tri > 190 ? 256 : (tri - 70) * 256 / 120;
+    uint16_t low = px_mix(RGB(136, 36, 42), RGB(170, 24, 30), blood);
     for (y = 0; y < BN_H; y++)
-        cv_rect(0, y * 2, 240, 2, px_mix(RGB(36, 16, 32), RGB(136, 36, 42), y * 256 / BN_H));
+        cv_rect(0, y * 2, 240, 2, px_mix(RGB(36, 16, 32), low, y * 256 / BN_H));
     for (i = 0; i < 8; i++) {
         uint32_t h = px_hash((uint32_t)i * 29u + 3u);
         bn_px((int32_t)(h % BN_W), (int32_t)((h >> 8) % 3u), RGB(150, 130, 140));
@@ -511,31 +515,50 @@ static void banner_oldblood(uint32_t t)
         for (x = 71; x <= 81; x++) {
             int32_t dx = (x - 76) * 2, dy = y * 2 - 7;
             if (dx * dx + dy * dy <= 70) {
-                uint16_t c = px_mix(RGB(244, 236, 222), RGB(226, 120, 110), blush);
+                uint16_t c = px_mix(RGB(244, 236, 222), RGB(206, 34, 40), blood);
                 if (((x * 7 + y * 3) % 11) == 0 || (x == 74 && y == 2) || (x == 78 && y == 5))
-                    c = px_mix(c, RGB(120, 80, 90), 70);   /* its seas */
+                    c = px_mix(c, RGB(90, 20, 30), 80);   /* its seas */
                 bn_px(x, y, c);
             }
         }
     for (x = 0; x < BN_W; x++) {              /* the roofline: spires, gables, chimneys */
         uint32_t h = px_hash((uint32_t)(x / 5) * 17u + 11u);
-        int32_t c5 = x % 5, top;
+        int32_t c5 = x % 5;
         if ((h & 7u) == 0u)                   /* a spire: a narrow point, high */
-            top = 1 + (c5 < 2 ? 2 - c5 : c5 - 2) * 2;
+            top[x] = 1 + (c5 < 2 ? 2 - c5 : c5 - 2) * 2;
         else if ((h & 3u) == 1u)              /* a gable */
-            top = 5 + (c5 < 2 ? 2 - c5 : c5 - 2);
+            top[x] = 5 + (c5 < 2 ? 2 - c5 : c5 - 2);
         else
-            top = 6 + (int32_t)((h >> 5) % 2u) - (c5 == 3 && (h & 16u));
-        if (x >= 68 && x <= 84)
-            top = top < 8 ? 8 : top;          /* lower roofs under the moon */
-        for (y = top; y < BN_H; y++)
-            bn_px(x, y, RGB(10, 6, 10));
+            top[x] = 6 + (int32_t)((h >> 5) % 2u) - (c5 == 3 && (h & 16u));
+        if (x >= 71 && x <= 81)
+            top[x] = top[x] < 8 ? 8 : top[x]; /* lower roofs under the moon */
+        else if (x >= 62 && x <= 90)          /* and either side of it, tall houses with their windows in view */
+            top[x] = x == 64 || x == 87 ? 3 : 5 - (x == 65 || x == 86);
+        for (y = top[x]; y < BN_H; y++)
+            bn_px(x, y, ROOF);
     }
-    for (x = 0; x < BN_W; x++) {              /* fog along the streets, drifting */
-        int32_t a = px_tri((uint32_t)x * 60u + t / 4u, 5000u) / 3;
-        bn_px(x, 10, px_mix(RGB(10, 6, 10), RGB(120, 110, 120), a));
-        bn_px(x, 9, px_mix(RGB(10, 6, 10), RGB(120, 110, 120), a / 3));
+    for (x = 2; x < BN_W; x += 5) {           /* windows: about half the houses lit, each dark now and then */
+        uint32_t h = px_hash((uint32_t)x * 31u + 5u);
+        int32_t wy = top[x] + 2;
+        if ((h & 3u) == 3u || wy > 9 || ((t / 7000u + h) % 5u) == 0u)
+            continue;
+        if ((h >> 4) % 4u == 0u && (t / 90u + h) % 17u < 2u)   /* a guttering lamp */
+            bn_px(x, wy, RGB(120, 70, 30));
+        else
+            bn_px(x, wy, RGB(236, 168, 74));
+        if ((h >> 6) & 1u && wy + 2 <= 9)     /* a second window below */
+            bn_px(x, wy + 2, RGB(214, 144, 60));
     }
+    for (y = 6; y < BN_H; y++)                /* wisps of fog rolling across in front of the roofs */
+        for (x = 0; x < BN_W; x++) {
+            int32_t w = px_tri((uint32_t)(x * 90 + y * 900) + t / 6u, 6000u) - 170;
+            int32_t v = px_tri((uint32_t)(x * 55 + y * 400) + t / 9u + 2500u, 9000u) - 190;
+            int32_t a = ((w > 0 ? w : 0) + (v > 0 ? v : 0)) * 3 / 2 + (y - 8) * 12;
+            if (a > 0) {
+                uint16_t under = y >= top[x] ? ROOF : px_mix(RGB(36, 16, 32), low, y * 256 / BN_H);
+                bn_px(x, y, px_mix(under, RGB(132, 120, 132), a > 110 ? 110 : a));
+            }
+        }
     {                                         /* a crow, now and then, crossing the moon */
         uint32_t p = t % 20000u;
         if (p < 6000u) {
