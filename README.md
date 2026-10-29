@@ -21,6 +21,16 @@ sound, no FM-1 needed.
 
 <br clear="right">
 
+## Quick start
+
+1. [Install the firmware](https://pjh-133.github.io/tidepool-fm1/install/) on your FM-1.
+2. Turn **PRESETS** to pick a scene you like the look of, from Shallows through to Old Blood.
+3. Press **SEQ**.
+4. Listen as the music builds: loops come in and drop out on their own, and the chords change now and then.
+5. Press any white key to bring in, or take out, the loop in the matching pool on the screen.
+
+When you're done, press **SEQ** again and the music winds down gently to silence.
+
 ## The scenes
 
 ![All twelve preset banks with every loop playing](docs/img/banks.png)
