@@ -15,6 +15,10 @@ envelopes and noise as it plays, so changing the chords takes effect at once.
 > FM-1's own firmware until you put that back (see [Going back to the stock firmware](#going-back-to-the-stock-firmware)).
 > Use it at your own risk.
 
+**[Install it from your browser](https://pjh-133.github.io/tidepool-fm1/install/)** (Chrome or Edge, FM-1 connected
+by USB), or **[try it in the browser](https://pjh-133.github.io/tidepool-fm1/emu/)** first: the same firmware, with
+sound, no FM-1 needed.
+
 <br clear="right">
 
 ## The scenes
@@ -119,9 +123,17 @@ keys repeat the main drums.
 **Hand drums**: darbuka (deep and rim strokes), riq, frame drum, taiko and small taiko, wooden clappers, udu,
 finger cymbals, two agogo bells and shaker, repeating up the keyboard.
 
-## Building and installing
+## Installing
 
-There's no one-click installer yet. For now you build the firmware yourself, then send it to the FM-1 over USB.
+The easiest way is the **[web installer](https://pjh-133.github.io/tidepool-fm1/install/)**. Open it in Chrome or
+Edge, connect the FM-1 by USB, and press Install. The browser asks once for permission to use MIDI: allow it.
+Don't unplug the FM-1 while it writes. The same page can put M-VAVE's own firmware back.
+
+Your settings and recorded loops survive later updates of Tidepool.
+
+## Building it yourself
+
+To change Tidepool or build it from source, you build the firmware, then send it to the FM-1 over USB.
 
 The firmware is built on [fm1-base](https://github.com/charlesvestal/fm1-base), which is included here as a git
 submodule. Its README covers the toolchain in more detail.
@@ -160,11 +172,10 @@ python3 base/bsp/tools/fm1_install.py firmware/build/tidepool.fwsc
 It asks before writing. Don't unplug the FM-1 while it writes (about a minute). If an install is ever cut off, the
 FM-1 waits in update mode: run the same command again and it finishes.
 
-Your settings and recorded loops survive later updates of Tidepool.
-
 ### Going back to the stock firmware
 
-Install M-VAVE's official firmware file the same way:
+Use "Back to the stock firmware" on the [web installer](https://pjh-133.github.io/tidepool-fm1/install/), or install
+M-VAVE's official firmware file from the command line:
 
 ```bash
 python3 base/bsp/tools/fm1_install.py FM-1.fwsc
@@ -172,6 +183,7 @@ python3 base/bsp/tools/fm1_install.py FM-1.fwsc
 
 ### Try it without an FM-1
 
+The [browser version](https://pjh-133.github.io/tidepool-fm1/emu/) is the quickest. To build things locally,
 fm1-base's host simulator runs the same firmware on your computer, with no toolchain needed. It's driven by
 scripts, which take screenshots and record WAV files as they go:
 
@@ -195,7 +207,8 @@ the same style. The engine, the banks, and how everything was measured and teste
 | `src/` | The sound engine and the banks: oscillators, filters, envelopes, reverb, echo, and each bank's sixteen loops |
 | `firmware/` | The FM-1 app: the panel, the screen and its pixel art, saving, the recorder, autoplay, and the tests |
 | `host/` | A Mac benchmark that renders the banks to WAV and estimates their cost on the FM-1 |
-| `web/` | An older browser emulator of the panel (first bank only) |
+| `web/` | An older browser emulator of the panel (first bank only); the [site's](https://pjh-133.github.io/tidepool-fm1/emu/) is the whole firmware |
+| `firmware/site/`, `firmware/docs/` | The website's front page and manual |
 | `base/` | [fm1-base](https://github.com/charlesvestal/fm1-base), the platform layer (git submodule) |
 
 ## Credits and licence

@@ -465,3 +465,19 @@ The engine (`src/`), the emulator (`web/`) and the app (`firmware/app.c`) are wr
 AMB-1 or X0X code. They only borrow methods (the calibration, the block structure). The firmware is built on
 fm1-base and felucca-bsp, both MPL-2.0: their files stay MPL-2.0 (changes to them would be published), and the app
 and engine may use any licence. `firmware/fm1.toml` says "proprietary" for now; change it if you publish.
+
+## Publishing a release and the website
+
+The website (<https://pjh-133.github.io/tidepool-fm1/>: front page, web installer, manual, the firmware in the
+browser, and the `.fwsc` download) is made by fm1-base's site tools from `firmware/site/landing.md`,
+`firmware/docs/MANUAL.md` (the README's "The scenes" to "The 36 instruments", with `img/` paths: keep the two in step)
+and a release build. It needs the JieLi toolchain and SDK, Emscripten (`brew install emscripten`) and a Python with
+Pillow. One command builds release VERSION, its browser version and the site, and pushes the site to the `gh-pages`
+branch, which GitHub Pages serves:
+
+```
+AC79_SDK=~/.jieli/ac79-sdk JIELI_TOOLCHAIN=~/.jieli/toolchain base/tools/publish_site.sh firmware 1.0.1
+```
+
+A release's identity is `FM-1_86` and the version's six digits (1.0.0: `FM-1_86010000`); the installer checks it after
+writing. Settings and recorded loops are kept across releases.
