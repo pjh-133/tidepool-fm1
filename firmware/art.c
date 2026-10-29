@@ -720,11 +720,16 @@ static uint16_t splash_px(int32_t x, int32_t y, uint32_t t)
             return SKY[band];
         }
     }
-    {   /* the sea: darker toward the shore; the sun's reflection broken by the waves, and wave crests moving */
+    {   /* the sea: darker toward the shore; the sun's reflection as thin streaks on every other row, each its own
+         * length, shimmering, fading toward the shore; wave crests moving */
         uint16_t c = px_mix(RGB(40, 92, 130), RGB(16, 50, 74), (y - 38) * 256 / 20);
-        int32_t spread = 10 - (y - 38) / 2;
-        if (dx >= -spread && dx <= spread && ((px_hash((uint32_t)(y * 13) + t / 160u) + (uint32_t)x) % 3u) == 0u)
-            return y < 44 ? RGB(255, 210, 130) : RGB(220, 150, 100);
+        int32_t d = y - 38;
+        if (d % 2 == 0 && d < 16) {
+            uint32_t h = px_hash((uint32_t)y * 97u + t / 260u);
+            int32_t half = 2 + (int32_t)(h % 7u) - d / 5, mid = (int32_t)((h >> 8) % 3u) - 1;
+            if (dx - mid >= -half && dx - mid <= half)
+                return px_mix(RGB(255, 226, 156), RGB(226, 128, 104), d * 256 / 16);
+        }
         if (((x * 3 + y * 7 + (int32_t)(t / 120u)) % 37) == 0)
             return RGB(110, 170, 200);
         return c;
