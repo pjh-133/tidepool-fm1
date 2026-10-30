@@ -26,7 +26,7 @@ MOOD = {
     "Dunes": ("C minor", "dusk in the desert: tanpura, oud, ney flute, darbuka and a campfire"),
     "Zen Garden": ("F major", "a temple garden in spring rain: sho, koto, shakuhachi, taiko and wind chimes"),
     "Clockwork": ("G minor", "a workshop of gears: music box, celesta, reed organ, tick-tock and a cuckoo"),
-    "Night Cafe": ("B flat major, swung", "late-night jazz: walking bass, Rhodes, muted trumpet, brushes, rain"),
+    "Night Cafe": ("B flat major, swung sixteenths", "lofi beats in a café on a rainy night: dusty Rhodes, sub bass, boom-bap drums, vinyl crackle, tape wobble"),
     "Bonfire": ("D minor", "dark fantasy among ruins (in the mood of Dark Souls): cathedral organ, solo cello, "
                            "a lone soprano and a fire to rest at"),
     "Old Blood": ("F minor", "a gothic nightmare (in the mood of Bloodborne): choir, tremolo strings, a warped "

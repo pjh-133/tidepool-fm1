@@ -1859,7 +1859,7 @@ void app_frame(void)
  *   01        the measurements since the last 01 (reply F0 7D 54 41, then 3-byte values, 7 bits each, low first:
  *             render average and worst block in 1/1000 of their time, the stages' average (voices, mix, effects,
  *             compressor) in 1/1000, plat_cpu_pct, dropouts, voices now and their peak, the bank, the loops playing)
- *   02 m m m  the loops playing: bit l of the 21-bit mask (16 used)
+ *   02 m m m  the loops playing: bit l of the 21-bit mask (16 used); the clock runs while any is on
  *   03 b      bank b, now
  *   04        the voice peak and the worst block start again
  *   05 k u    a stress test: setting k (0 volume .. 5 pan) at knob position u on every loop, not saved
@@ -1912,6 +1912,7 @@ int app_sysex(const uint8_t *p, uint32_t n)
         for (l = 0; l < TP_NLOOP; l++)
             if (((m >> l) & 1u) != ui.want[l])
                 set_loop((int)l, (int)(m >> l & 1u));
+        tp_hold(!m);                          /* playing, as PLAY would; none: back to bar 1, as stopped */
         ui.redraw |= 7;
     } else if (p[2] == 0x03u && n >= 4u && p[3] < NBK) {
         ui.pick = p[3];

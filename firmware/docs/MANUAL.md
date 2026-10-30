@@ -19,7 +19,7 @@ yours to fill with loops you record.
 | 7 | **Dunes** | Dusk in the desert: tanpura, oud, ney flute, darbuka and a campfire |
 | 8 | **Zen Garden** | Spring rain in a temple garden: sho, koto, shakuhachi, taiko and wind chimes |
 | 9 | **Clockwork** | A workshop of gears: music box, celesta, reed organ, tick-tock and a cuckoo |
-| 10 | **Night Café** | Late-night jazz, swung: walking bass, Rhodes, muted trumpet, brushes, rain on the window |
+| 10 | **Night Café** | Lofi beats on a rainy night: dusty Rhodes, sub bass, boom-bap drums, vinyl crackle, tape wobble |
 | 11 | **Bonfire** | Dark fantasy among ruins: a cathedral organ, a solo cello, a lone soprano and a fire to rest at |
 | 12 | **Old Blood** | A gothic nightmare: choir, tremolo strings, a warped music box, church bells and crows |
 | 13 | **Blank Canvas** | Empty: record your own loops |

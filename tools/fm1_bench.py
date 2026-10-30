@@ -85,7 +85,8 @@ def show(label, r):
           f"xruns {r['xruns']}  shed {r.get('shed', 0)}  voices now {r['sounding']:2d} peak {r['peak']:2d}", flush=True)
 
 
-BANKS = ["Shallows", "Deep Space", "Forest Floor", "Neon Rain", "Dungeon Synth"]
+BANKS = ["Shallows", "Deep Space", "Forest Floor", "Neon Rain", "Dungeon Synth", "Aurora", "Dunes", "Zen Garden",
+         "Clockwork", "Night Cafe", "Bonfire", "Old Blood"]
 
 
 def main():

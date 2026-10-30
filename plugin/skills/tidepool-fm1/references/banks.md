@@ -123,16 +123,16 @@ Its own chords (progression 0): Gm - Ebmaj7 - Cm7 - Dm7.
 
 ## 10. Night Cafe
 
-B flat major, swung; late-night jazz: walking bass, Rhodes, muted trumpet, brushes, rain.
+B flat major, swung sixteenths; lofi beats in a café on a rainy night: dusty Rhodes, sub bass, boom-bap drums, vinyl crackle, tape wobble.
 
-Its own chords (progression 0): Bbmaj9 - Gm9 - Cm9 - F13.
+Its own chords (progression 0): Bbmaj9 - Ebmaj9 - Dm7 - Gm9.
 
 | Keys | Row | Loops |
 |---|---|---|
-| 1-4 | Keys | Upright bass, Rhodes, Organ, Velvet pad |
-| 5-8 | Solos | Muted trumpet, Vibraphone, Tenor sax, Jazz guitar |
-| 9-12 | Brushes | Brush swish, Ride, Soft kick, Side stick |
-| 13-16 | Cafe | Rain on window, Murmur, Clinking cups, Espresso |
+| 1-4 | Keys | Dusty Rhodes, Sub bass, Tape pad, Lazy piano |
+| 5-8 | Melodies | Sleepy piano, Mellow guitar, Flute, Music box |
+| 9-12 | Beats | Boom kick, Dusty snare, Lazy hats, Snaps |
+| 13-16 | Cafe | Vinyl crackle, Rain on window, Murmur, Espresso |
 
 ## 11. Bonfire
 
