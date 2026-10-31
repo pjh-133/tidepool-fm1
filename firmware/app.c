@@ -1,5 +1,5 @@
-/* Tidepool on the FM-1: the app. The twelve preset banks (the web app's five, then Aurora, Dunes, Zen Garden,
- * Clockwork, Night Cafe, Bonfire and Old Blood) and the Blank Canvas on the engine in ../src, played from the panel the way the browser emulator
+/* Tidepool on the FM-1: the app. The thirteen preset banks (the web app's five, then Aurora, Dunes, Zen Garden,
+ * Clockwork, Night Cafe, Bonfire, Old Blood and Cyberpunk) and the Blank Canvas on the engine in ../src, played from the panel the way the browser emulator
  * (../web) plays it:
  *   white keys 1-16  the loops, in rows of four (Drones, Melodies, Beats, then Textures: the scene's treatments,
  *                    the banks' second family, kept last): lit playing, blinking joining
@@ -47,8 +47,9 @@ static const char *const BTN_NAME[NB] = {"FX", "SEL", "ENV", "LFO", "EDIT", "GLO
 
 #define NBK (TP_NBANK + 1)               /* the preset banks, then the Blank Canvas */
 #define CANVAS_B TP_NBANK
-#define SET_MAGIC 0x37504454u            /* "TDP7": the settings record, twelve preset banks; the older ones (below)
+#define SET_MAGIC 0x38504454u            /* "TDP8": the settings record, thirteen preset banks; the older ones (below)
                                           * are read and kept */
+#define SET_MAGIC7 0x37504454u           /* twelve preset banks and the canvas */
 #define SET_MAGIC6 0x36504454u           /* ten preset banks and the canvas */
 #define SET_MAGIC5 0x35504454u           /* five preset banks and the canvas */
 #define SET_MAGIC4 0x34504454u           /* the same, from before the textures were quieter */
@@ -85,6 +86,15 @@ typedef struct {
     uint8_t instr, bars, snap, click;
     int8_t oct;
 } settings6_t;
+#define OLD7_NBANK 12                    /* TDP7: twelve preset banks, then the canvas */
+typedef struct {
+    uint32_t magic;
+    uint8_t bpm, bank, rsv[2];
+    uint8_t u[OLD7_NBANK + 1][TP_NLOOP][NSET];
+    uint8_t prog[OLD7_NBANK + 1];
+    uint8_t instr, bars, snap, click;
+    int8_t oct;
+} settings7_t;
 #define SET_U_OFF __builtin_offsetof(settings_t, u)
 #define SET2_SIZE (SET_U_OFF + OLD_NBANK * TP_NLOOP * NSET)
 #define SET3_SIZE ((SET2_SIZE + OLD_NBANK + 3u) & ~3u)
@@ -184,12 +194,33 @@ static void settings_defaults(void)
     recorder_defaults();
 }
 
-/* the settings from the flash: TDP6, or an older record kept (what it has carried over, the rest defaults), or the
+/* an older record with n preset banks, then the canvas: its banks' settings and progressions, the canvas's (now after
+ * all the preset banks) and the recorder's; the newer banks their defaults */
+#define FROM_OLDER(o, n)                                                                                            \
+    do {                                                                                                           \
+        settings_defaults();                                                                                       \
+        set.bpm = (o)->bpm;                                                                                        \
+        set.bank = (uint8_t)((o)->bank == (n) ? CANVAS_B : (o)->bank);                                             \
+        for (b = 0; b < (n); b++) {                                                                                \
+            memcpy(set.u[b], (o)->u[b], sizeof set.u[b]);                                                          \
+            set.prog[b] = (o)->prog[b];                                                                            \
+        }                                                                                                          \
+        memcpy(set.u[CANVAS_B], (o)->u[n], sizeof set.u[CANVAS_B]);                                                \
+        set.prog[CANVAS_B] = (o)->prog[n];                                                                         \
+        set.instr = (o)->instr;                                                                                    \
+        set.bars = (o)->bars;                                                                                      \
+        set.snap = (o)->snap;                                                                                      \
+        set.click = (o)->click;                                                                                    \
+        set.oct = (o)->oct;                                                                                        \
+    } while (0)
+
+/* the settings from the flash: TDP8, or an older record kept (what it has carried over, the rest defaults), or the
  * defaults */
 static void settings_load(void)
 {
     static union {
         settings_t s;
+        settings7_t s7;
         settings6_t s6;
         settings5_t s5;
         uint8_t raw[sizeof(settings_t)];
@@ -198,38 +229,12 @@ static void settings_load(void)
     uint32_t magic = ld.s.magic;
     if (got == (int)sizeof(settings_t) && magic == SET_MAGIC)
         set = ld.s;
-    else if (got == (int)sizeof(settings6_t) && magic == SET_MAGIC6) {
-        const settings6_t *o = &ld.s6;       /* the ten banks and the canvas: the canvas now after twelve */
-        settings_defaults();
-        set.bpm = o->bpm;
-        set.bank = (uint8_t)(o->bank == OLD6_NBANK ? CANVAS_B : o->bank);
-        for (b = 0; b < OLD6_NBANK; b++) {
-            memcpy(set.u[b], o->u[b], sizeof set.u[b]);
-            set.prog[b] = o->prog[b];
-        }
-        memcpy(set.u[CANVAS_B], o->u[OLD6_NBANK], sizeof set.u[CANVAS_B]);
-        set.prog[CANVAS_B] = o->prog[OLD6_NBANK];
-        set.instr = o->instr;
-        set.bars = o->bars;
-        set.snap = o->snap;
-        set.click = o->click;
-        set.oct = o->oct;
-    } else if (got == (int)sizeof(settings5_t) && (magic == SET_MAGIC5 || magic == SET_MAGIC4)) {
-        const settings5_t *o = &ld.s5;       /* the five banks and the canvas: the canvas now last */
-        settings_defaults();
-        set.bpm = o->bpm;
-        set.bank = (uint8_t)(o->bank == OLD_NBANK ? CANVAS_B : o->bank);
-        for (b = 0; b < OLD_NBANK; b++) {
-            memcpy(set.u[b], o->u[b], sizeof set.u[b]);
-            set.prog[b] = o->prog[b];
-        }
-        memcpy(set.u[CANVAS_B], o->u[OLD_NBANK], sizeof set.u[CANVAS_B]);
-        set.prog[CANVAS_B] = o->prog[OLD_NBANK];
-        set.instr = o->instr;
-        set.bars = o->bars;
-        set.snap = o->snap;
-        set.click = o->click;
-        set.oct = o->oct;
+    else if (got == (int)sizeof(settings7_t) && magic == SET_MAGIC7)
+        FROM_OLDER(&ld.s7, OLD7_NBANK);
+    else if (got == (int)sizeof(settings6_t) && magic == SET_MAGIC6)
+        FROM_OLDER(&ld.s6, OLD6_NBANK);
+    else if (got == (int)sizeof(settings5_t) && (magic == SET_MAGIC5 || magic == SET_MAGIC4)) {
+        FROM_OLDER(&ld.s5, OLD_NBANK);
         older = magic == SET_MAGIC4;
     } else if ((got == (int)SET2_SIZE && magic == SET_MAGIC2) || (got == (int)SET3_SIZE && magic == SET_MAGIC3)) {
         settings_defaults();                 /* the five banks' settings, and (TDP3) their progressions */
@@ -1931,15 +1936,16 @@ int app_sysex(const uint8_t *p, uint32_t n)
 }
 
 #ifdef PLAT_HOST
-/* an older firmware's settings, as it saved them: TDP6 (ten banks, then the canvas), TDP5 (five, then the canvas) or TDP3 (five banks). Marked
+/* an older firmware's settings, as it saved them: TDP7 (twelve banks, then the canvas), TDP6 (ten), TDP5 (five, then the canvas) or TDP3 (five banks). Marked
  * values: tempo 88; bank 1 loop 1 volume 33; the canvas's loop 1 volume 44; bank 3's progression 7; the recorder's
  * instrument 3, 4 bars, bar snap, no click, octave +1 */
 int app_host_cmd(const char *cmd, const char *a, const char *b, const char *c, const char *d)
 {
     static union {
+        settings7_t s7;
         settings6_t s6;
         settings5_t s5;
-        uint8_t raw[sizeof(settings6_t)];
+        uint8_t raw[sizeof(settings7_t)];
     } o;
     int b0, l, k;
     (void)c;
@@ -1948,6 +1954,27 @@ int app_host_cmd(const char *cmd, const char *a, const char *b, const char *c, c
         return 0;
     memset(&o, 0, sizeof o);
     b0 = atoi(b);
+    if (atoi(a) == 7) {                      /* TDP7: twelve banks, then the canvas */
+        for (k = 0; k <= OLD7_NBANK; k++)
+            for (l = 0; l < TP_NLOOP; l++) {
+                o.s7.u[k][l][S_VOL] = 70;
+                o.s7.u[k][l][S_DEC] = 50;
+            }
+        o.s7.magic = SET_MAGIC7;
+        o.s7.bpm = 88;
+        o.s7.bank = (uint8_t)b0;
+        o.s7.u[0][0][S_VOL] = 33;
+        o.s7.u[11][0][S_VOL] = 55;           /* Old Blood's first loop */
+        o.s7.u[OLD7_NBANK][0][S_VOL] = 44;
+        o.s7.prog[2] = 7;
+        o.s7.instr = 3;
+        o.s7.bars = 4;
+        o.s7.snap = TP_SNAP_BAR;
+        o.s7.click = 0;
+        o.s7.oct = 1;
+        plat_store_save(OBJ_SETTINGS, &o, sizeof o.s7);
+        return 1;
+    }
     if (atoi(a) == 6) {                      /* TDP6: ten banks, then the canvas */
         for (k = 0; k <= OLD6_NBANK; k++)
             for (l = 0; l < TP_NLOOP; l++) {

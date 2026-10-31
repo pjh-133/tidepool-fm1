@@ -14,7 +14,7 @@ if [ "$(docker inspect -f '{{.State.Running}}' $NAME 2>/dev/null)" != "true" ]; 
         debian:bookworm-slim sh -c "sleep 3600" >/dev/null
 fi
 J="docker exec $NAME /opt/jieli"
-for f in tp_engine bank_shallows bank_deepspace bank_forestfloor bank_neonrain bank_dungeon bank_aurora bank_dunes bank_zen bank_clockwork bank_cafe bank_bonfire bank_oldblood bank_canvas banks tp_harmony tp_instruments; do
+for f in tp_engine bank_shallows bank_deepspace bank_forestfloor bank_neonrain bank_dungeon bank_aurora bank_dunes bank_zen bank_clockwork bank_cafe bank_bonfire bank_oldblood bank_cyberpunk bank_canvas banks tp_harmony tp_instruments; do
     $J/pi32v2/bin/clang -target pi32v2 -O2 -ffunction-sections -fno-builtin -mcpu=r3 -mfprev1 -ffp-contract=off \
         -std=c99 -Wall -Wextra -Wdouble-promotion -Werror=double-promotion -Wno-unused-parameter -Wno-unused-function \
         -DTP_MAXVOICE=32 -I/opt/jieli/pi32v2/include -c src/$f.c -o build/fm1/$f.o

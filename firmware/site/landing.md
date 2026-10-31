@@ -1,11 +1,11 @@
 # TIDEPOOL
 
-Tidepool is an ambient loop instrument for the M-VAVE FM-1. It has twelve scenes of sixteen loops each: drones,
+Tidepool is an ambient loop instrument for the M-VAVE FM-1. It has thirteen scenes of sixteen loops each: drones,
 melodies, beats and textures. Turn them on and off from the keys and they always fit together, in time and in key.
 Change the chords, hand it over to autoplay, or record your own loops on the Blank Canvas with 36 instruments,
 from Rhodes and koto to a full drum kit. Every sound is synthesised live on the FM-1, with no samples.
 
-![All twelve scenes: Shallows, Deep Space, Forest Floor, Neon Rain, Dungeon Synth, Aurora, Dunes, Zen Garden, Clockwork, Night Café, Bonfire and Old Blood](img/banks.png "Tidepool's twelve scenes on the FM-1's screen")
+![All thirteen scenes: Shallows, Deep Space, Forest Floor, Neon Rain, Dungeon Synth, Aurora, Dunes, Zen Garden, Clockwork, Night Café, Bonfire, Old Blood and Cyberpunk](img/banks.png "Tidepool's thirteen scenes on the FM-1's screen")
 
 Version {{VERSION}}. This is unofficial firmware, not made or supported by M-VAVE. Installing it is at your own
 risk, and the installer can put M-VAVE's own firmware back.

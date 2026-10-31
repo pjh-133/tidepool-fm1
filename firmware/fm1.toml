@@ -11,7 +11,7 @@ words = "words.tsv"
 font_full = ["T"]             # the small font with lower case too: the loop names, "Dm9"
 ble = false                    # no Bluetooth: it needs JieLi's full SDK and most of the RAM the engine uses
 # the site (tools/make_site.py): published to GitHub Pages with base/tools/publish_site.sh firmware VERSION
-tagline = "Tidepool on the FM-1: twelve ambient scenes and a blank canvas"
+tagline = "Tidepool on the FM-1: thirteen ambient scenes and a blank canvas"
 repo = "https://github.com/pjh-133/tidepool-fm1"
 licence = "MPL-2.0"
 credits = "Built on fm1-base by Charles Vestal and felucca-bsp by Leo Kuroshita (both MPL-2.0)."

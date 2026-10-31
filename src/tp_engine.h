@@ -105,5 +105,5 @@ void tp_bank_kal(const tp_bank_t *b, uint8_t *kal64);   /* the bank's own note g
 extern uint8_t tp_kal[64];
 
 /* the preset banks (banks.c): the web app's five, in its order, then the FM-1's five */
-#define TP_NBANK 12
+#define TP_NBANK 13
 extern const tp_bank_t *const TP_BANKS[TP_NBANK];

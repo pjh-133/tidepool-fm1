@@ -1,17 +1,18 @@
-# Settings saved by older firmwares, kept by this one (the canvas moving from sixth or eleventh to thirteenth).
+# Settings saved by older firmwares, kept by this one (the canvas moving from sixth, eleventh or thirteenth to
+# fourteenth).
 #   firmware/build/host/tidepool_host firmware/tests/migrate.txt firmware/build/host
 wait 800
 # TDP5, saved on the canvas: still the canvas, its settings with it; the presets' and the recorder's kept
 oldsettings 5 5
 reboot
 wait 800
-expect bank 12
+expect bank 13
 expect bpm 88
 expect u0_0 44
 expect instr 3
 expect snap 3
 expect oct 1
-spin PRESET -12
+spin PRESET -13
 wait 1500
 expect bank 0
 expect u0_0 33
@@ -52,16 +53,16 @@ wait 800
 expect bank 2
 expect prog 7
 expect bpm 88
-# TDP6 (ten banks, then the canvas), saved on the canvas: the canvas now thirteenth, every bank's settings kept
+# TDP6 (ten banks, then the canvas), saved on the canvas: the canvas now fourteenth, every bank's settings kept
 oldsettings 6 10
 reboot
 wait 800
-expect bank 12
+expect bank 13
 expect bpm 88
 expect u0_0 44
 expect instr 3
 expect oct 1
-spin PRESET -3
+spin PRESET -4
 wait 1500
 expect bank 9
 expect u0_0 55
@@ -83,3 +84,34 @@ oldsettings 6 9
 reboot
 wait 800
 expect bank 9
+# TDP7 (twelve banks, then the canvas), saved on the canvas: the canvas now fourteenth, every bank's settings kept
+oldsettings 7 12
+reboot
+wait 800
+expect bank 13
+expect bpm 88
+expect u0_0 44
+expect instr 3
+expect oct 1
+spin PRESET -2
+wait 1500
+expect bank 11
+expect u0_0 55
+spin PRESET -9
+wait 1500
+expect bank 2
+expect prog 7
+spin PRESET -2
+wait 1500
+expect u0_0 33
+# the new bank: its own defaults
+spin PRESET 12
+wait 1500
+expect bank 12
+expect u0_0 70
+expect u4_0 25
+# TDP7 saved on Old Blood: still there
+oldsettings 7 11
+reboot
+wait 800
+expect bank 11

@@ -60,7 +60,7 @@ Every bank keeps its own settings.
 
 | Control | What it does |
 |---|---|
-| PRESETS | Change bank. The bank changes once the knob stops turning (about 0.7 s): the loops fade out, then the new bank waits at bar 1 with nothing playing (KEYS, THEN PLAY) for loops to be picked and PLAY or SEQ. With autoplay on, it carries straight on in the new bank instead. Twelve preset banks, then the Blank Canvas |
+| PRESETS | Change bank. The bank changes once the knob stops turning (about 0.7 s): the loops fade out, then the new bank waits at bar 1 with nothing playing (KEYS, THEN PLAY) for loops to be picked and PLAY or SEQ. With autoplay on, it carries straight on in the new bank instead. Thirteen preset banks, then the Blank Canvas |
 | SELECT | Tempo, 56-140 BPM. Loops, autoplay and chord changes all follow it |
 | MASTER | Main volume |
 | SAVE | Remember the tempo, the current bank, every loop's settings in every bank, and every bank's chord progression, so they come back after switching off. SAVE is lit whenever something is unsaved. Loops recorded on the Blank Canvas save themselves straight away and don't need SAVE |

@@ -6,7 +6,7 @@ Tidepool is an ambient loop instrument, here as custom firmware for the
 [M-VAVE FM-1](https://www.m-vave.com/) pocket synth. Each bank is a scene with sixteen loops (drones, textures,
 melodies and beats). Turn them on and off from the keys and they always fit together, in time and in key. You can
 reshape them with the knobs, change their chords, or hand the whole thing over to autoplay and just listen. A
-thirteenth bank, the Blank Canvas, is yours to fill: record your own loops on 36 instruments.
+fourteenth bank, the Blank Canvas, is yours to fill: record your own loops on 36 instruments.
 
 Every sound is synthesised live on the FM-1. There are no samples: each note is built from oscillators, filters,
 envelopes and noise as it plays, so changing the chords takes effect at once.
@@ -24,7 +24,7 @@ sound, no FM-1 needed.
 ## Quick start
 
 1. [Install the firmware](https://pjh-133.github.io/tidepool-fm1/install/) on your FM-1.
-2. Turn **PRESETS** to pick a scene you like the look of, from Shallows through to Old Blood.
+2. Turn **PRESETS** to pick a scene you like the look of, from Shallows through to Cyberpunk.
 3. Press **SEQ** (this starts and stops autoplay mode).
 4. Listen as the music builds: loops come in and drop out on their own, and the chords change now and then.
 5. Press any white key to bring in, or take out, the loop in the matching pool on the screen.
@@ -33,7 +33,7 @@ When you're done, press **SEQ** again and the music winds down gently to silence
 
 ## The scenes
 
-![All twelve preset banks with every loop playing](docs/img/banks.png)
+![All thirteen preset banks with every loop playing](docs/img/banks.png)
 
 | # | Bank | Mood |
 |---|---|---|
@@ -49,10 +49,11 @@ When you're done, press **SEQ** again and the music winds down gently to silence
 | 10 | **Night Café** | Lofi beats on a rainy night: dusty Rhodes, sub bass, boom-bap drums, vinyl crackle, tape wobble |
 | 11 | **Bonfire** | Dark fantasy among ruins: a cathedral organ, a solo cello, a lone soprano and a fire to rest at |
 | 12 | **Old Blood** | A gothic nightmare: choir, tremolo strings, a warped music box, church bells and crows |
-| 13 | **Blank Canvas** | Empty: record your own loops |
+| 13 | **Cyberpunk** | A megacity in the rain, in the mood of Blade Runner: swelling brass synths, a lonely sax, flying cars and fire |
+| 14 | **Blank Canvas** | Empty: record your own loops |
 
-Each bank has its own colours, an animated pixel-art banner and its own shape of pool. Bonfire and Old Blood are
-written in the mood of Dark Souls and Bloodborne, but every sound, chord and picture in them is original.
+Each bank has its own colours, an animated pixel-art banner and its own shape of pool. Bonfire, Old Blood and
+Cyberpunk are written in the mood of Dark Souls, Bloodborne and Blade Runner, but every sound, chord and picture in them is original.
 
 ## Playing it
 
@@ -90,7 +91,7 @@ Each pool is a loop that glows in its row's colour while it plays.
 
 ![The Blank Canvas while recording](docs/img/canvas_recording.png)
 
-The thirteenth bank starts empty. Its sixteen pools fill with loops you record, and each one keeps its own instrument.
+The fourteenth bank starts empty. Its sixteen pools fill with loops you record, and each one keeps its own instrument.
 Once recorded, they play like any other bank: turn them on and off, adjust them with the knobs, autoplay them.
 
 **To record a loop:**

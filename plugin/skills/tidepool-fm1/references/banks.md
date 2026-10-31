@@ -160,6 +160,19 @@ Its own chords (progression 0): Fm - Db - Bbm - C.
 | 9-12 | Hunt | Low toms, Coffin knock, Cello stabs, Bone rattle |
 | 13-16 | Streets | Night fog, Church bells, Crows, Rain on cobbles |
 
-## 13. Blank Canvas
+## 13. Cyberpunk
+
+E minor; a megacity in the rain (in the mood of Blade Runner): swelling brass synths, a lonely sax, a remembered piano, flying cars, fire and a big drum.
+
+Its own chords (progression 0): Em9 - Cmaj7 - Am9 - B7sus4.
+
+| Keys | Row | Loops |
+|---|---|---|
+| 1-4 | Brass | Brass swell, Low drone, Glass pad, Dark choir |
+| 5-8 | Memories | Lonely sax, Tears piano, Bells, Bleeps |
+| 9-12 | Pulse | Big drum, Metal hit, Seq bass, Ticks |
+| 13-16 | Streets | Acid rain, Flying car, Street voice, Far sirens |
+
+## 14. Blank Canvas
 
 Starts empty: sixteen pools for loops you record (see canvas.md). Keys 1-16 are pools 1-16 in order, four rows of four. Each recorded loop keeps its own instrument, length and snap.

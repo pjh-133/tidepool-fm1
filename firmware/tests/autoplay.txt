@@ -95,9 +95,9 @@ wait 30
 expect auto 0
 expect wanted 0
 # the Blank Canvas, nothing recorded: SEQ says so
-spin PRESET 12
+spin PRESET 13
 wait 1500
-expect bank 12
+expect bank 13
 tap SEQ
 wait 30
 expect auto 0

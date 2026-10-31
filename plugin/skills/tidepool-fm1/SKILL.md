@@ -1,6 +1,6 @@
 ---
 name: tidepool-fm1
-description: Helps people play, record with and troubleshoot Tidepool, a custom ambient-loop firmware for the M-VAVE FM-1 synthesizer (twelve synthesised scenes of sixteen loops, chord progressions, autoplay, and a Blank Canvas for recording loops on 36 instruments including drum kits). Use whenever someone asks how to do something in Tidepool or on an FM-1 running it, what a button, knob, key or screen message means, which bank or loop or instrument has a particular sound, how to record, save, delete or autoplay, how to install it or go back to the stock firmware, or why something isn't working as expected.
+description: Helps people play, record with and troubleshoot Tidepool, a custom ambient-loop firmware for the M-VAVE FM-1 synthesizer (thirteen synthesised scenes of sixteen loops, chord progressions, autoplay, and a Blank Canvas for recording loops on 36 instruments including drum kits). Use whenever someone asks how to do something in Tidepool or on an FM-1 running it, what a button, knob, key or screen message means, which bank or loop or instrument has a particular sound, how to record, save, delete or autoplay, how to install it or go back to the stock firmware, or why something isn't working as expected.
 ---
 
 # Tidepool for the M-VAVE FM-1
@@ -8,7 +8,7 @@ description: Helps people play, record with and troubleshoot Tidepool, a custom 
 Tidepool is an unofficial firmware for the M-VAVE FM-1, a pocket synth with 27 velocity-sensing keys (16 white,
 11 black), 14 buttons, 7 knobs, a MASTER volume pot and a small square screen. It turns the FM-1 into an ambient
 loop instrument. Each bank is a scene of sixteen loops (drones, melodies, beats and textures) that always fit
-together in time and in key. Every sound is synthesised live, with no samples. A thirteenth bank, the Blank Canvas,
+together in time and in key. Every sound is synthesised live, with no samples. A fourteenth bank, the Blank Canvas,
 holds loops the player records.
 
 Website: <https://pjh-133.github.io/tidepool-fm1/>, with the [web installer](https://pjh-133.github.io/tidepool-fm1/install/),

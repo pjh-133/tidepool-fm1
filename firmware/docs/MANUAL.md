@@ -1,12 +1,12 @@
 # TIDEPOOL manual
 
 Tidepool is an ambient loop instrument for the M-VAVE FM-1. Each bank is a scene with sixteen loops (drones,
-melodies, beats and textures) that always fit together, in time and in key. A thirteenth bank, the Blank Canvas, is
+melodies, beats and textures) that always fit together, in time and in key. A fourteenth bank, the Blank Canvas, is
 yours to fill with loops you record.
 
 ## The scenes
 
-![All twelve preset banks with every loop playing](img/banks.png)
+![All thirteen preset banks with every loop playing](img/banks.png)
 
 | # | Bank | Mood |
 |---|---|---|
@@ -22,10 +22,11 @@ yours to fill with loops you record.
 | 10 | **Night Café** | Lofi beats on a rainy night: dusty Rhodes, sub bass, boom-bap drums, vinyl crackle, tape wobble |
 | 11 | **Bonfire** | Dark fantasy among ruins: a cathedral organ, a solo cello, a lone soprano and a fire to rest at |
 | 12 | **Old Blood** | A gothic nightmare: choir, tremolo strings, a warped music box, church bells and crows |
-| 13 | **Blank Canvas** | Empty: record your own loops |
+| 13 | **Cyberpunk** | A megacity in the rain, in the mood of Blade Runner: swelling brass synths, a lonely sax, flying cars and fire |
+| 14 | **Blank Canvas** | Empty: record your own loops |
 
-Each bank has its own colours, an animated pixel-art banner and its own shape of pool. Bonfire and Old Blood are
-written in the mood of Dark Souls and Bloodborne, but every sound, chord and picture in them is original.
+Each bank has its own colours, an animated pixel-art banner and its own shape of pool. Bonfire, Old Blood and
+Cyberpunk are written in the mood of Dark Souls, Bloodborne and Blade Runner, but every sound, chord and picture in them is original.
 
 ## Playing it
 
@@ -63,7 +64,7 @@ Each pool is a loop that glows in its row's colour while it plays.
 
 ![The Blank Canvas while recording](img/canvas_recording.png)
 
-The thirteenth bank starts empty. Its sixteen pools fill with loops you record, and each one keeps its own instrument.
+The fourteenth bank starts empty. Its sixteen pools fill with loops you record, and each one keeps its own instrument.
 Once recorded, they play like any other bank: turn them on and off, adjust them with the knobs, autoplay them.
 
 **To record a loop:**

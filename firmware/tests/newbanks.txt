@@ -1,4 +1,4 @@
-# The FM-1's own five banks: each with every loop on, its screen, and a recording.
+# The FM-1's own eight banks: each with every loop on, its screen, and a recording.
 #   firmware/build/host/tidepool_host firmware/tests/newbanks.txt firmware/build/host
 wait 800
 spin PRESET 5
@@ -113,3 +113,19 @@ wait 30
 expect wanted 0
 wait 3000
 shot bank_oldblood_idle.png
+spin PRESET 1
+wait 1500
+expect bank 12
+wav bank_cyberpunk.wav
+strum 0 15 20
+tap PLAY
+wait 9000
+expect wanted 16
+expect voices >6
+shot bank_cyberpunk.png
+wavstop
+tap PLAY
+wait 30
+expect wanted 0
+wait 3000
+shot bank_cyberpunk_idle.png

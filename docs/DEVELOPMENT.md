@@ -96,7 +96,7 @@ from `tp_bench solo`, so it holds for no voice limit; a lower limit costs less.
 
 ## The installable firmware (`firmware/`)
 
-An FM-1 firmware: twelve preset banks (the web app's five, then seven written for the FM-1) and a Blank Canvas, on the
+An FM-1 firmware: thirteen preset banks (the web app's five, then eight written for the FM-1) and a Blank Canvas, on the
 engine in `src/`, played from the panel the way the browser emulator plays it. It is built on [fm1-base](https://github.com/charlesvestal/fm1-base) (in `base/`, MPL-2.0, with
 felucca-bsp inside it), which supplies the hardware layer, screen drawing, saving, USB and the update package. The
 app is `firmware/app.c`.
@@ -151,6 +151,7 @@ animated banner behind its name in pixel letters, and the shape of its pools.
 | Night Café | a cup of coffee on its saucer, steam rising, a string of lights | a café booth: rounded top, square foot |
 | Bonfire | ruined towers against an ashen dusk, a bonfire with a sword thrust in it, embers rising | heater shields |
 | Old Blood | gothic spires under a great moon that slowly turns blood red and back, lit windows (one guttering, each going dark now and then), fog rolling across the roofs, a crow crossing | lancet windows: a pointed top |
+| Cyberpunk | towers in an orange smog, a billboard high on the tallest turning pink to blue, fire bursting from two stacks, a flying car crossing, rain | a display's frame: two corners cut on the slant |
 
 All of it is drawn procedurally into fm1-base's canvas in the main loop, the banner about ten times a second (4 ms of
 the screen's time each).
@@ -195,18 +196,19 @@ melodies, beats; the textures last on the keys), their own key and chords, so PL
 | Dunes | C minor: Cm Fm Bbsus4 Ab | Tanpura, Night pad, Low strings, Dune swell | Sand wind, Campfire, Camel bells, Crickets | Oud, Ney flute, Santur, Distant voice | Darbuka, Frame drum, Finger cymbals, Riq jingles |
 | Zen Garden | F major: Fadd9 Am7 Bbadd9 Csus4 | Temple drone, Sho, Singing bowl, Low koto | Bamboo fountain, Rain on leaves, Wind chimes, Cicadas | Koto, Shakuhachi, Temple bell, Water drops | Taiko, Wood clappers, Small bell, Sand rake |
 | Clockwork | G minor: Gm Ebmaj7 Cm7 Dm7 | Steam hum, Reed organ, Musical saw, Low gears | Gears, Steam hiss, Cuckoo, Old radio | Music box, Celesta, Toy piano, Clarinet | Tick tock, Ratchet, Hammer, Pendulum |
-| Night Café | Bb major, swung: Bbmaj9 Gm9 Cm9 F13 | Upright bass (walking), Rhodes, Organ, Velvet pad | Rain on window, Murmur, Clinking cups, Espresso | Muted trumpet, Vibraphone, Tenor sax, Jazz guitar | Brush swish, Ride, Soft kick, Side stick |
+| Night Café (lofi) | Bb major, swung sixteenths: Bbmaj9 Ebmaj9 Dm7 Gm9 | Dusty Rhodes, Sub bass, Tape pad, Lazy piano | Vinyl crackle, Rain on window, Murmur, Espresso | Sleepy piano, Mellow guitar, Flute, Music box | Boom kick, Dusty snare (laid back), Lazy hats, Snaps |
 | Bonfire (in the mood of Dark Souls) | D minor: Dm Bbmaj7 Gm Asus4 | Ash drone, Mournful strings, Cathedral organ, Low choir | Bonfire, Ashen wind, Distant bell, Chains | Harp, Solo cello, Soul glimmer, Lone soprano | Timpani, Anvil, Heavy steps, Sword scrape |
 | Old Blood (in the mood of Bloodborne) | F minor, C major for the harmonic minor: Fm Db Bbm C | Dread drone, Gothic choir, Pipe organ, Tremolo strings | Night fog, Church bells, Crows, Rain on cobbles | Lullaby box, Violin lament, Harpsichord, Eerie voice | Low toms (3+3+2), Coffin knock, Cello stabs, Bone rattle |
+| Cyberpunk (in the mood of Blade Runner) | E minor: Em9 Cmaj7 Am9 B7sus4 | Brass swell, Low drone, Glass pad, Dark choir | Acid rain, Flying car, Street voice, Far sirens | Lonely sax, Tears piano, Bells, Bleeps | Big drum, Metal hit, Seq bass, Ticks |
 
-Bonfire and Old Blood are written in the mood of those games; every sound, chord and picture is the FM-1's own, with
+Bonfire, Old Blood and Cyberpunk are written in the mood of those games and that film; every sound, chord and picture is the FM-1's own, with
 nothing taken from the games' music or art.
 
 Each loop was levelled against the loops doing the same job in the web app's banks (alone, 24 s), and each bank's
-whole mix against theirs: all twelve within -19 to -27 dBFS with every loop on. On the Mac's estimate they cost what
+whole mix against theirs: all thirteen within -19 to -27 dBFS with every loop on. On the Mac's estimate they cost what
 the web app's do (27-38 % with all 16 loops, the five originals 29-39 %), none stealing a note. Settings saved by
-earlier firmwares (the ten-bank "TDP6", the five-bank "TDP5" or older) are kept: every bank's, the canvas's (now
-the thirteenth bank), the recorder's and the tempo; `firmware/tests/migrate.txt` checks it. `firmware/tests/newbanks.txt` plays each new
+earlier firmwares (the twelve-bank "TDP7", the ten-bank "TDP6", the five-bank "TDP5" or older) are kept: every bank's, the canvas's (now
+the fourteenth bank), the recorder's and the tempo; `firmware/tests/migrate.txt` checks it. `firmware/tests/newbanks.txt` plays each new
 bank with every loop on, its screen and a recording (in `firmware/build/host`).
 
 Each bank keeps its own loop settings. The screen shows the bank's name, its chords and its row names. Settings

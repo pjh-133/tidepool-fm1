@@ -31,6 +31,8 @@ MOOD = {
                            "a lone soprano and a fire to rest at"),
     "Old Blood": ("F minor", "a gothic nightmare (in the mood of Bloodborne): choir, tremolo strings, a warped "
                              "music box, church bells and crows"),
+    "Cyberpunk": ("E minor", "a megacity in the rain (in the mood of Blade Runner): swelling brass synths, a lonely "
+                             "sax, a remembered piano, flying cars, fire and a big drum"),
 }
 ROW_FAM = [0, 2, 3, 1]                       # firmware/app.c: the screen's rows top to bottom, by family
 NOTES = ["F", "F#", "G", "G#", "A", "A#", "B", "C", "C#", "D", "D#", "E"]

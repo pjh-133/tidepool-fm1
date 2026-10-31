@@ -7,7 +7,7 @@ mkdir -p build
 CC="${CC:-cc}"
 ENGINE_FLAGS="-O2 -ffp-contract=off -fno-vectorize -fno-slp-vectorize -std=c99 -Wall -Wextra -Werror=double-promotion -Wno-unused-parameter"
 $CC $ENGINE_FLAGS -c src/tp_engine.c -o build/tp_engine.o
-for f in bank_shallows bank_deepspace bank_forestfloor bank_neonrain bank_dungeon bank_aurora bank_dunes bank_zen bank_clockwork bank_cafe bank_bonfire bank_oldblood bank_canvas banks tp_harmony tp_instruments; do
+for f in bank_shallows bank_deepspace bank_forestfloor bank_neonrain bank_dungeon bank_aurora bank_dunes bank_zen bank_clockwork bank_cafe bank_bonfire bank_oldblood bank_cyberpunk bank_canvas banks tp_harmony tp_instruments; do
     $CC $ENGINE_FLAGS -c src/$f.c -o build/$f.o
 done
 $CC -O2 -std=c99 -Wall -Wextra -Wno-unused-parameter -c host/tp_bench.c -o build/tp_bench.o

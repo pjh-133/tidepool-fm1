@@ -2,9 +2,9 @@
 #   firmware/build/host/tidepool_host firmware/tests/canvas.txt firmware/build/host
 wait 800
 # PRESET to the last bank: the Blank Canvas, every loop empty
-spin PRESET 12
+spin PRESET 13
 wait 900
-expect bank 12
+expect bank 13
 shot canvas_empty.png
 tapkey w0
 wait 30
@@ -56,9 +56,9 @@ shot canvas_playing.png
 reboot
 wait 800
 expect bank 0
-spin PRESET 12
+spin PRESET 13
 wait 900
-expect bank 12
+expect bank 13
 expect recmode 0
 expect used0 1
 expect notes0 3
@@ -116,7 +116,7 @@ reboot
 wait 800
 expect used0 1
 expect used1 0
-spin PRESET 12
+spin PRESET 13
 wait 900
 # GLO during a take cancels it: the slot stays free
 tap GLO
@@ -143,10 +143,10 @@ wait 50
 expect dirty 0
 reboot
 wait 800
-expect bank 12
+expect bank 13
 expect linstr0 3
 # REC and GLO in a preset bank only say so; the setting goes back to the presets' six
-spin PRESET -12
+spin PRESET -13
 wait 900
 expect bank 0
 expect setting 0
@@ -154,9 +154,9 @@ tap GLO
 wait 30
 expect recmode 0
 # KNOB2: snap goes on to BAR (a held chord fills its bar), and no further
-spin PRESET 12
+spin PRESET 13
 wait 900
-expect bank 12
+expect bank 13
 tap GLO
 wait 30
 expect snap 1

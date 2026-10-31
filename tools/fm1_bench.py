@@ -2,7 +2,7 @@
 """Tidepool on the FM-1: measure the firmware's audio load on the device itself, over USB-MIDI SysEx (app.c).
 
   fm1_bench.py                 idle, then every bank with all 16 loops on
-  fm1_bench.py --bank 3        one bank (1..12)
+  fm1_bench.py --bank 3        one bank (1..13)
   fm1_bench.py --solo 3        one bank, each loop on its own (which loops cost what)
   fm1_bench.py --stats         one reading of whatever is playing now
   fm1_bench.py --stress 5      a bank with every loop's attack and decay at their maximum: an overload, to watch
@@ -86,7 +86,7 @@ def show(label, r):
 
 
 BANKS = ["Shallows", "Deep Space", "Forest Floor", "Neon Rain", "Dungeon Synth", "Aurora", "Dunes", "Zen Garden",
-         "Clockwork", "Night Cafe", "Bonfire", "Old Blood"]
+         "Clockwork", "Night Cafe", "Bonfire", "Old Blood", "Cyberpunk"]
 
 
 def main():
@@ -94,7 +94,7 @@ def main():
     ap.add_argument("--bank", type=int)
     ap.add_argument("--solo", type=int)
     ap.add_argument("--stats", action="store_true")
-    ap.add_argument("--stress", type=int, help="a bank (1..12) with every loop's attack and decay at their maximum")
+    ap.add_argument("--stress", type=int, help="a bank (1..13) with every loop's attack and decay at their maximum")
     ap.add_argument("--window", type=float, default=15.0)
     a = ap.parse_args()
     fm = FM1()
@@ -128,7 +128,7 @@ def main():
             fm.loops(0)
             time.sleep(3)
         return
-    banks = [a.bank - 1] if a.bank else range(12)
+    banks = [a.bank - 1] if a.bank else range(13)
     fm.loops(0)
     time.sleep(2)
     show("idle", measure(fm, 4, 8))

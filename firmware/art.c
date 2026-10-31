@@ -2,8 +2,9 @@
  * bank's look, after the web app's themes: its palette, an animated banner behind its name (Shallows' light shafts
  * and bubbles, Deep Space's stars, Forest Floor's pines and fireflies, Neon Rain's skyline in the rain, Dungeon
  * Synth's stones and embers; Aurora's northern lights over snow, Dunes' caravan at dusk, Zen Garden's mountain and
- * falling petals, Clockwork's turning gears, Night Cafe's steaming cup of coffee, Bonfire's fire among ruins, Old Blood's blood moon over spires; the Blank Canvas's watercolours on
- * paper) and the shape of its pools. Everything is drawn procedurally into fm1-base's canvas
+ * falling petals, Clockwork's turning gears, Night Cafe's steaming cup of coffee, Bonfire's fire among ruins, Old
+ * Blood's blood moon over spires, Cyberpunk's burning city in the rain; the Blank Canvas's watercolours on paper)
+ * and the shape of its pools. Everything is drawn procedurally into fm1-base's canvas
  * (gfx.c: cv_rect, cv_pset), in the main loop. Included by app.c. */
 
 /* ---------------------------------------------------------------- the font --- */
@@ -98,7 +99,7 @@ static int32_t px_tri(uint32_t t, uint32_t period)   /* a triangle wave 0..256..
 
 /* ------------------------------------------------------------- the themes --- */
 enum { SHAPE_ROUND, SHAPE_ORB, SHAPE_PEBBLE, SHAPE_NEON, SHAPE_ARCH, SHAPE_PAPER, SHAPE_ICE, SHAPE_DUNE, SHAPE_ZEN,
-       SHAPE_GEAR, SHAPE_BOOTH, SHAPE_SHIELD, SHAPE_LANCET };
+       SHAPE_GEAR, SHAPE_BOOTH, SHAPE_SHIELD, SHAPE_LANCET, SHAPE_CHAMFER };
 typedef struct {
     uint16_t bg, cell, cell_sel, title, title_shadow, accent, chord, fam[4];
     uint8_t shape;
@@ -139,6 +140,9 @@ static const theme_t THEMES[TP_NBANK + 1] = {
     /* Old Blood (a gothic night: bone, fog, moonlit violet, blood) */
     {RGB(16, 10, 14), RGB(30, 20, 26), RGB(46, 28, 36), RGB(238, 226, 214), RGB(8, 4, 6), RGB(214, 52, 60),
      RGB(100, 24, 32), {RGB(210, 196, 170), RGB(124, 144, 156), RGB(170, 150, 214), RGB(196, 52, 60)}, SHAPE_LANCET, 0},
+    /* Cyberpunk (a city at night in the rain: smog orange, rain teal, a billboard's pink, warning red) */
+    {RGB(6, 8, 16), RGB(14, 20, 34), RGB(24, 34, 56), RGB(255, 232, 210), RGB(4, 4, 10), RGB(255, 140, 60),
+     RGB(110, 50, 24), {RGB(255, 150, 70), RGB(90, 200, 220), RGB(236, 116, 196), RGB(230, 72, 64)}, SHAPE_CHAMFER, 0},
     {RGB(243, 238, 228), RGB(229, 221, 206), RGB(216, 206, 189), RGB(43, 39, 35), RGB(255, 252, 244), RGB(181, 71, 62),
      RGB(181, 71, 62), {RGB(181, 71, 62), RGB(47, 127, 122), RGB(181, 122, 18), RGB(107, 78, 155)}, SHAPE_PAPER, 1},
 };
@@ -571,6 +575,73 @@ static void banner_oldblood(uint32_t t)
     }
 }
 
+static void banner_cyberpunk(uint32_t t)
+{
+    static const uint16_t TOWER = RGB(8, 8, 16);
+    int32_t x, y, i, top[BN_W];
+    for (y = 0; y < BN_H; y++)                /* smog lit from below, orange at the horizon */
+        cv_rect(0, y * 2, 240, 2, px_mix(RGB(16, 14, 30), RGB(168, 78, 32), y * 256 / BN_H));
+    for (x = 0; x < BN_W; x++) {              /* towers, blocks of them, a few very tall */
+        uint32_t h = px_hash((uint32_t)(x / 4) * 37u + 9u);
+        top[x] = 4 + (int32_t)(h % 5u);
+        if ((h & 15u) < 2u)
+            top[x] = 1 + (int32_t)((h >> 4) % 2u);
+        if (x % 4 == 3 && (h & 32u))          /* a gap between blocks */
+            top[x] = top[x] + 2 < BN_H ? top[x] + 2 : top[x];
+        if (x >= 72 && x <= 79)               /* the tallest, carrying the billboard, in view between the name and the
+                                               * tempo */
+            top[x] = x == 72 || x == 79 ? 2 : 1;
+        else if ((x >= 61 && x <= 65) || (x >= 82 && x <= 86))   /* low roofs round the stacks */
+            top[x] = 8;
+        for (y = top[x]; y < BN_H; y++)
+            bn_px(x, y, TOWER);
+    }
+    for (x = 0; x < BN_W; x++)                /* windows: rows of tiny lights, each flickering out now and then */
+        for (y = top[x] + 1; y < BN_H; y += 2) {
+            uint32_t h = px_hash((uint32_t)(x * 41 + y * 13));
+            if ((h & 7u) < 2u && ((t / 2300u + h) % 11u))
+                bn_px(x, y, (h >> 5 & 3u) ? RGB(214, 150, 80) : RGB(200, 220, 240));
+        }
+    for (x = 73; x <= 78; x++)                /* a billboard, high on the tower, its colours turning */
+        for (y = 2; y <= 5; y++) {
+            int32_t ph = px_tri(t + (uint32_t)(y * 700), 7000u);
+            bn_px(x, y, px_mix(RGB(236, 70, 170), RGB(60, 210, 230), ph));
+        }
+    for (i = 0; i < 2; i++) {                 /* the stacks, and the fire that bursts from them */
+        int32_t sx = i ? 84 : 63, burst = px_tri(t + (uint32_t)i * 2600u, 5200u);
+        for (y = 6; y < BN_H; y++)
+            bn_px(sx, y, RGB(20, 16, 22));
+        if (burst > 100) {                    /* a column of flame, flickering, lighting the smog round it */
+            int32_t hgt = 1 + (burst - 100) * 4 / 156, k;
+            bn_px(sx - 1, 5, RGB(150, 70, 30));
+            bn_px(sx + 1, 5, RGB(150, 70, 30));
+            for (k = 0; k < hgt; k++) {
+                uint32_t f = px_hash((uint32_t)(k * 7 + i * 3) + t / 80u);
+                int32_t fx = sx + (k ? (int32_t)(f % 3u) - 1 : 0);
+                bn_px(fx, 5 - k, k == 0 ? RGB(255, 236, 150) : k == hgt - 1 ? RGB(220, 70, 20) : RGB(255, 150, 40));
+            }
+        }
+    }
+    {                                         /* a flying car, crossing slowly, its light blinking */
+        uint32_t p = t % 16000u;
+        if (p < 11000u) {
+            int32_t cx = BN_W + 2 - (int32_t)(p * (BN_W + 6u) / 11000u), cy = 3 + (int32_t)(p / 3000u) % 2;
+            bn_px(cx, cy, RGB(230, 236, 255));
+            bn_px(cx + 1, cy, RGB(90, 96, 120));
+            if ((t / 300u) & 1u)
+                bn_px(cx + 2, cy, RGB(255, 40, 40));
+        }
+    }
+    for (i = 0; i < 26; i++) {                /* rain, straight down */
+        uint32_t h = px_hash((uint32_t)i * 19u + 7u);
+        int32_t ry = (int32_t)((t / 40u + h) % (BN_H + 5u)) - 2, rx = (int32_t)(h % BN_W);
+        if (ry >= 0 && ry < BN_H)
+            bn_px(rx, ry, RGB(110, 140, 170));
+        if (ry - 1 >= 0 && ry - 1 < BN_H)
+            bn_px(rx, ry - 1, RGB(50, 70, 96));
+    }
+}
+
 static void banner_canvas(uint32_t t)
 {
     static const uint16_t WASH[5] = {RGB(181, 71, 62), RGB(47, 127, 122), RGB(181, 122, 18), RGB(107, 78, 155),
@@ -614,6 +685,7 @@ static void banner(int bank, uint32_t t)
     case 9: banner_cafe(t); break;
     case 10: banner_bonfire(t); break;
     case 11: banner_oldblood(t); break;
+    case 12: banner_cyberpunk(t); break;
     default: banner_canvas(t); break;
     }
 }
@@ -646,6 +718,13 @@ static void pool_shape(int shape, int32_t x, int32_t y, int32_t w, int32_t h, ui
         for (r = 0; r < 5; r++) {
             cv_rect(x, y + r, A[r], 1, grid);
             cv_rect(x + w - A[r], y + r, A[r], 1, grid);
+        }
+        return;
+    }
+    case SHAPE_CHAMFER: {                      /* two corners cut on the slant, as a display's frame */
+        for (r = 0; r < 6; r++) {
+            cv_rect(x, y + r, 6 - r, 1, grid);
+            cv_rect(x + w - (6 - r), y + h - 1 - r, 6 - r, 1, grid);
         }
         return;
     }

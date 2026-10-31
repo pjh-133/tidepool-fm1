@@ -2,9 +2,9 @@
 # a take with the drum kit, then each of the 36 played (instruments.wav, to listen to).
 #   firmware/build/host/tidepool_host firmware/tests/instruments.txt firmware/build/host
 wait 800
-spin PRESET 12
+spin PRESET 13
 wait 900
-expect bank 12
+expect bank 13
 tap GLO
 wait 30
 expect recmode 1
