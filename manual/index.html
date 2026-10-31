@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TIDEPOOL: TIDEPOOL manual</title>
+<meta name="description" content="TIDEPOOL manual for TIDEPOOL, a firmware for the M-VAVE FM-1.">
+<style>
+/* paper and ink: warm white paper, ink-blue type, vermilion for what is played, mustard for asides; a shade of the
+   paper for code and callouts (CTL-1's; a firmware may restyle its site) */
+:root {
+  --paper: #fbf8f1; --sheet: #efe9dc; --rule: #ddd4c2; --ink: #1e2b5a; --muted: #5d6585;
+  --hot: #e5482e; --hot-t: #f8d3c9; --cool: #d9a21b; --cool-t: #f5e4b8;
+  --hot-ink: #c23a22;                                 /* the vermilion as text: 4.5:1 on the paper */
+  color-scheme: light;
+}
+body {
+  background: var(--paper); color: var(--ink); margin: 0;
+  font: 400 17px/1.6 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding-inline: 16px; padding-block: 32px 64px;
+}
+main { max-width: 46rem; margin: 0 auto; }
+.page > .site { max-width: 46rem; margin-inline: auto; }
+main:focus { outline: none; }
+h1, h2, h3 { font-family: inherit; text-wrap: balance; line-height: 1.2; }
+h1 { font-size: 2.2rem; font-weight: 700; margin: 0 0 .4rem; letter-spacing: .02em; }
+h2 { font-size: 1.3rem; font-weight: 700; margin: 3rem 0 .8rem; padding-top: .8rem; border-top: 2px solid var(--ink); }
+h2 .num { color: var(--hot); margin-right: .5em; font-variant-numeric: tabular-nums; }
+h3 { font-size: 1.1rem; font-weight: 700; margin: 2rem 0 .5rem; }
+p, li { max-width: 65ch; }
+p { margin: 0 0 1rem; }
+ul, ol { padding-left: 1.3rem; margin: 0 0 1rem; }
+li { margin: .2rem 0; }
+li::marker { color: var(--hot); }
+strong { font-weight: 700; }
+a { color: var(--ink); text-decoration-color: var(--hot); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+a:hover { background: var(--hot-t); }
+:focus-visible { outline: 3px solid var(--hot-ink); outline-offset: 2px; }
+.skip { position: absolute; left: 16px; top: -100px; background: var(--ink); color: var(--paper); padding: 8px 14px; border-radius: 0 0 6px 6px; z-index: 1; }
+.skip:focus { top: 0; }
+code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .86em; }
+code { background: var(--sheet); padding: .08em .35em; border-radius: 3px; }
+pre { background: var(--sheet); border-radius: 6px; padding: 14px 16px; overflow-x: auto; line-height: 1.45; margin: 0 0 1.2rem; }
+pre code { background: none; padding: 0; font-size: inherit; }
+hr { display: none; }
+.table { overflow-x: auto; margin: 0 0 1.3rem; }
+table { border-collapse: collapse; width: 100%; font-size: .95rem; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; vertical-align: top; padding: .45rem .7rem .45rem 0; border-bottom: 1px solid var(--rule); }
+th { font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: .78rem; color: var(--muted); border-bottom: 2px solid var(--ink); }
+td:first-child { white-space: nowrap; }
+.lede { margin-bottom: 1.6rem; }
+.status { background: var(--sheet); border-radius: 6px; padding: 12px 16px; }
+.status p { margin: 0; }
+.site { display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem 1.2rem; margin: 0 0 1.6rem; padding-bottom: .5rem; border-bottom: 2px solid var(--ink); }
+.site .home { font-size: 1.1rem; font-weight: 700; letter-spacing: .04em; color: var(--ink); text-decoration: none; }
+.site .home:hover { color: var(--hot-ink); background: none; }
+.site nav { margin-left: auto; display: flex; flex-wrap: wrap; gap: .2rem 1rem; font-size: .92rem; }
+.site nav a { color: var(--ink); text-underline-offset: 3px; }
+.site nav a[aria-current] { text-decoration: none; color: var(--hot-ink); }
+a.home { color: inherit; text-decoration: none; }
+a.home:hover { background: none; color: var(--hot-ink); }
+main > a.home { display: inline-block; font-size: .9rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 .4rem; }
+.callout { border-left: 4px solid var(--cool); background: var(--cool-t); padding: 10px 16px; margin: 0 0 1.2rem; max-width: 65ch; border-radius: 0 6px 6px 0; }
+.callout p { margin: 0; }
+details { background: var(--sheet); border-radius: 6px; padding: 0 16px; margin: 0 0 1.2rem; }
+details > summary { cursor: pointer; padding: 10px 0; }
+details[open] > summary { margin-bottom: .4rem; }
+details > :last-child { margin-bottom: 1rem; }
+.swatch { display: inline-block; width: .7em; height: .7em; margin-right: .4em; vertical-align: .02em; }
+nav.contents ol { columns: 2 14rem; column-gap: 2rem; padding-left: 1.3rem; }
+.figs { display: flex; flex-wrap: wrap; gap: 20px; margin: .4rem 0 1.6rem; }
+figure { margin: 0; flex: 0 1 auto; }
+figure img { display: block; max-width: 100%; height: auto; }
+figure.shot img { width: 300px; image-rendering: pixelated; border-radius: 4px; box-shadow: 0 0 0 1px var(--rule); }
+figure.wide { flex-basis: 100%; }
+figure.wide img { width: 100%; }
+figcaption { color: var(--muted); font-size: .88rem; margin-top: .4rem; max-width: 300px; }
+figure.wide figcaption { max-width: none; }
+nav.contents li { break-inside: avoid; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<div class="page">
+<main id="content" tabindex="-1">
+<a class="home" href="../">TIDEPOOL</a>
+<h1>TIDEPOOL manual</h1>
+<p>Tidepool is an ambient loop instrument for the M-VAVE FM-1. Each bank is a scene with sixteen loops (drones, melodies, beats and textures) that always fit together, in time and in key. A fourteenth bank, the Blank Canvas, is yours to fill with loops you record.</p>
+<h2 id="the-scenes">The scenes</h2>
+<div class="figs"><figure class="shot"><img src="img/banks.png" alt="All thirteen preset banks with every loop playing" loading="lazy"><figcaption>All thirteen preset banks with every loop playing</figcaption></figure></div>
+<div class="table" tabindex="0" role="region" aria-label="Table: The scenes (#, Bank, Mood)"><table><thead><tr><th>#</th><th>Bank</th><th>Mood</th></tr></thead><tbody><tr><td>1</td><td><strong>Shallows</strong></td><td>Under the water: a low drone, glass arpeggios, kalimba, rain and ocean</td></tr><tr><td>2</td><td><strong>Deep Space</strong></td><td>Event horizons, star bells, sonar and a lone flute</td></tr><tr><td>3</td><td><strong>Forest Floor</strong></td><td>Earth hum, cello, marimba, crickets, a stream and an owl</td></tr><tr><td>4</td><td><strong>Neon Rain</strong></td><td>A city at night: Juno pads, chord stabs, lo-fi beats, rain on glass and traffic</td></tr><tr><td>5</td><td><strong>Dungeon Synth</strong></td><td>Stone organ, lost choir, harpsichord, war drums and cave drips</td></tr><tr><td>6</td><td><strong>Aurora</strong></td><td>The northern lights: glassy pads, ice bells, whale song and sleigh bells</td></tr><tr><td>7</td><td><strong>Dunes</strong></td><td>Dusk in the desert: tanpura, oud, ney flute, darbuka and a campfire</td></tr><tr><td>8</td><td><strong>Zen Garden</strong></td><td>Spring rain in a temple garden: sho, koto, shakuhachi, taiko and wind chimes</td></tr><tr><td>9</td><td><strong>Clockwork</strong></td><td>A workshop of gears: music box, celesta, reed organ, tick-tock and a cuckoo</td></tr><tr><td>10</td><td><strong>Night Café</strong></td><td>Lofi beats on a rainy night: dusty Rhodes, sub bass, boom-bap drums, vinyl crackle, tape wobble</td></tr><tr><td>11</td><td><strong>Bonfire</strong></td><td>Dark fantasy among ruins: a cathedral organ, a solo cello, a lone soprano and a fire to rest at</td></tr><tr><td>12</td><td><strong>Old Blood</strong></td><td>A gothic nightmare: choir, tremolo strings, a warped music box, church bells and crows</td></tr><tr><td>13</td><td><strong>Cyberpunk</strong></td><td>A megacity in the rain, in the mood of Blade Runner: swelling brass synths, a lonely sax, flying cars and fire</td></tr><tr><td>14</td><td><strong>Blank Canvas</strong></td><td>Empty: record your own loops</td></tr></tbody></table></div>
+<p>Each bank has its own colours, an animated pixel-art banner and its own shape of pool. Bonfire, Old Blood and Cyberpunk are written in the mood of Dark Souls, Bloodborne and Blade Runner, but every sound, chord and picture in them is original.</p>
+<h2 id="playing-it">Playing it</h2>
+<p>When you switch on or change bank, nothing plays yet and the bar counter waits at bar 1. Pick the loops you want on the white keys (they blink, waiting), then press <strong>PLAY</strong> and they all start together on the first beat. Or press <strong>SEQ</strong> to let autoplay build the mix for you.</p>
+<p>The screen shows the bank's name and tempo, its four chords (the current one lit), and sixteen pools in four rows. Each pool is a loop that glows in its row's colour while it plays.</p>
+<h3 id="the-keys-and-knobs">The keys and knobs</h3>
+<div class="table" tabindex="0" role="region" aria-label="Table: The keys and knobs (Control, What it does)"><table><thead><tr><th>Control</th><th>What it does</th></tr></thead><tbody><tr><td><strong>White keys 1–16</strong></td><td>Turn a loop on or off. Rows, top to bottom: drones, melodies, beats, then textures (rain, wind, fire: the scene's atmosphere). While the music is playing, a loop waits for the next beat to come in, blinking until it does. While it's stopped, a loop you pick blinks until you press PLAY</td></tr><tr><td><strong>KNOB 1–4</strong></td><td>Adjust the selected row's four loops, one knob each</td></tr><tr><td><strong>OCT− / OCT+</strong></td><td>Choose what the knobs adjust: Volume, Attack, Decay, Reverb, Echo or Pan (shown bottom left)</td></tr><tr><td><strong>ALGORITHM</strong></td><td>Choose the row the knobs adjust. Pressing a key selects its row too</td></tr><tr><td><strong>SELECT</strong></td><td>Tempo (56–140 bpm)</td></tr><tr><td><strong>MASTER</strong></td><td>Main volume</td></tr><tr><td><strong>PRESETS</strong></td><td>Change bank. Everything fades out, then the new bank waits at bar 1 for you to pick loops and press PLAY (or SEQ)</td></tr><tr><td><strong>SAVE</strong></td><td>Remember the tempo, the bank and every loop's settings in every bank. Lit when there's something unsaved</td></tr></tbody></table></div>
+<h3 id="play-chords-and-autoplay">Play, chords and autoplay</h3>
+<div class="table" tabindex="0" role="region" aria-label="Table: Play, chords and autoplay (Control, What it does)"><table><thead><tr><th>Control</th><th>What it does</th></tr></thead><tbody><tr><td><strong>PLAY</strong></td><td>Start: the loops you've picked come in together, from bar 1. While playing, PLAY stops everything and the counter goes back to bar 1; press it again to bring back the same mix. PLAY blinks when loops are picked and waiting</td></tr><tr><td><strong>Hold PLAY, turn KNOB 1</strong></td><td>Change the bank's chord progression. 0 is the bank's own; 1–99 are new ones in the same key, each the same every time. The change comes in at the next bar. Hold PLAY for a moment and the screen reminds you</td></tr><tr><td><strong>SEQ</strong></td><td><strong>Autoplay.</strong> Tidepool brings loops in and out on its own, once every four bars (faster at higher tempos). It builds up from nothing to about two loops in each row, keeps every row going, changes the chords now and then, and changes the texture only rarely. It works on any bank, the Blank Canvas included</td></tr><tr><td><strong>SEQ again</strong></td><td><strong>End autoplay gracefully.</strong> Loops drop out a few at a time, every four bars (the beat first, the drones last), until everything has stopped. SEQ blinks while it ends; press SEQ once more to change your mind</td></tr><tr><td><strong>Hold HOME for 3 seconds</strong></td><td><strong>Surprise me:</strong> a random mix with random settings. A countdown shows on screen; let go early and nothing happens</td></tr></tbody></table></div>
+<h2 id="the-blank-canvas-record-your-own-loops">The Blank Canvas: record your own loops</h2>
+<div class="figs"><figure class="shot"><img src="img/canvas_recording.png" alt="The Blank Canvas while recording" loading="lazy"><figcaption>The Blank Canvas while recording</figcaption></figure></div>
+<p>The fourteenth bank starts empty. Its sixteen pools fill with loops you record, and each one keeps its own instrument. Once recorded, they play like any other bank: turn them on and off, adjust them with the knobs, autoplay them.</p>
+<p><strong>To record a loop:</strong></p>
+<ol><li>Turn PRESETS to the Blank Canvas, then press <strong>GLO</strong> to enter recording mode (GLO lights up). The keys now play an instrument, and they respond to how hard you press.</li><li>Set the loop up: - <strong>PRESETS</strong> chooses the instrument. - <strong>KNOB 1</strong> sets the loop's length: 1, 2 or 4 bars. - <strong>KNOB 2</strong> sets the snap: off, 1/16, 1/8, or BAR, where each note starts on a bar line and lasts whole bars, for held chords. - <strong>KNOB 3</strong> turns the click on or off. - <strong>OCT− / OCT+</strong> shift the keys' octave.</li><li>Press <strong>REC</strong> to start a new loop in the next free pool.</li><li>Press <strong>REC</strong> again. A one-bar count-in starts at the next bar line (straight away if nothing is playing yet), then recording begins.</li><li>Play. The loop goes round and round its length, and each pass adds to what's already there, so you can build it up layer by layer.</li><li>Press <strong>REC</strong> a third time to keep it. It is saved straight away (no need to press SAVE) and keeps playing, so you can go straight on to record the next loop over it.</li></ol>
+<p>GLO during a take cancels it. <strong>GLO</strong> or <strong>HOME</strong> takes you back to playback. <strong>PLAY</strong> starts and stops the mix while you record, so you can record over other loops.</p>
+<p><strong>To delete a loop:</strong> hold <strong>EDIT</strong> and tap the loop's key (its pool blinks red), then tap the same key again. Any other key cancels.</p>
+<h3 id="the-36-instruments">The 36 instruments</h3>
+<div class="table" tabindex="0" role="region" aria-label="Table: The 36 instruments (Kind, Instruments)"><table><thead><tr><th>Kind</th><th>Instruments</th></tr></thead><tbody><tr><td>Keys</td><td>Felt keys, Warm organ, Rhodes, Harpsichord, Celesta, Toy piano</td></tr><tr><td>Plucked and struck</td><td>Glass bell, Kalimba, Pluck, Harp, Marimba, Music box, Nylon guitar, Vibraphone, Koto, Oud, Steel pan</td></tr><tr><td>Strings, winds and voices</td><td>Soft pad, Choir, Cello, Flute, Mellow brass, Strings, Shakuhachi, Violin, Muted trumpet, Soprano</td></tr><tr><td>Leads</td><td>Chip lead, Synth lead</td></tr><tr><td>Bass</td><td>Sub bass, Moog bass, Upright bass</td></tr><tr><td>Bells</td><td>Temple bell, Singing bowl</td></tr><tr><td>Drums</td><td><strong>Drum kit</strong> and <strong>Hand drums</strong>: each key plays a different drum (the octave buttons don't change them)</td></tr></tbody></table></div>
+<div class="figs"><figure class="shot"><img src="img/drum_kit.png" alt="The drum kit selected in recording mode" loading="lazy"><figcaption>The drum kit selected in recording mode</figcaption></figure></div>
+<p><strong>Drum kit</strong>, from the lowest key: kick, rim, snare, clap, low tom, closed hi-hat, mid tom, high tom, pedal hi-hat, crash, open hi-hat and ride. From the second F up: deep kick, shaker, brush, tambourine, cowbell and ride. The top keys repeat the main drums.</p>
+<p><strong>Hand drums</strong>: darbuka (deep and rim strokes), riq, frame drum, taiko and small taiko, wooden clappers, udu, finger cymbals, two agogo bells and shaker, repeating up the keyboard.</p>
+</main>
+</div>
+</body>
+</html>
