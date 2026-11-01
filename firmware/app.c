@@ -130,16 +130,14 @@ static void apply_loop(int l)
         tp_param(l, k, u_value(k, USET[l][k]));
 }
 
-/* the bank's chord progression (set.prog): now (nothing plays), or from the next bar line. 0 if a change is still
- * waiting for its bar line (try again) */
+/* the bank's chord progression (set.prog): now (nothing plays), or from the next bar line (replacing one still
+ * waiting for it) */
 static int apply_progression(int now)
 {
     tp_chord_t c[4];
     uint8_t kal[64];
     if (IS_CANVAS)                           /* its loops play their own notes */
         return 1;
-    if (!now && tp_chords_pending())
-        return 0;
     tp_harmony(TP_BANKS[set.bank], set.prog[set.bank], c, kal);
     tp_set_chords(c, kal, now);
     return 1;
@@ -341,7 +339,7 @@ static struct {
     uint8_t play_down, play_turned;      /* PLAY held; KNOB1 turned while it was (then its release does nothing) */
     uint8_t play_hint;                   /* PLAY held a moment: KNOB1's chords offered on the screen */
     uint32_t play_t;                     /* PLAY went down */
-    uint8_t prog_waiting;                /* a progression chosen, waiting for the last change's bar line */
+    uint8_t prog_waiting;                /* a progression chosen, for app_frame to hand to the engine */
     uint8_t rec_mode;                    /* the canvas: 0 playback, 1 recording (GLO) */
     uint8_t rs, rslot;                   /* the recorder (R_*), and the loop it is making */
     uint8_t rsaving, rkeep;              /* a take finished: saved once the engine has closed it; it plays on */

@@ -688,14 +688,14 @@ uint8_t tp_kal[64];
 
 float tp_sps(void) { return 60.0f / bpm / 4.0f; }
 /* the chords playing: the bank's own, or a progression of its key (tp_set_chords). A change waits for the next bar
- * line (do_step) unless nothing is playing */
-static tp_chord_t chords[4], chords_next[4];
-static uint8_t kal_next[64];
-static volatile uint8_t chords_pending;
+ * line (do_step) unless nothing is playing; a newer one replaces it there, written to the other of two slots so the
+ * one do_step may be copying is never touched */
+static tp_chord_t chords[4], chords_next[2][4];
+static uint8_t kal_next[2][64];
+static volatile uint8_t chords_pending;      /* 0, or 1 + the slot of the change waiting */
 
 const tp_chord_t *tp_chord_at(int step) { return &chords[(step % 64) / 16]; }
 const tp_chord_t *tp_chords(void) { return chords; }
-int tp_chords_pending(void) { return chords_pending; }
 
 void tp_set_chords(const tp_chord_t *c, const uint8_t *kal, int now)
 {
@@ -705,12 +705,13 @@ void tp_set_chords(const tp_chord_t *c, const uint8_t *kal, int now)
         chords_pending = 0;
         return;
     }
-    if (chords_pending)                      /* the last change has not reached its bar line yet: keep it */
-        return;
-    memcpy(chords_next, c, sizeof chords_next);
-    memcpy(kal_next, kal, sizeof kal_next);
-    __asm__ __volatile__("" ::: "memory");
-    chords_pending = 1;
+    {
+        int slot = chords_pending == 1;      /* not the slot of the change waiting */
+        memcpy(chords_next[slot], c, sizeof chords_next[slot]);
+        memcpy(kal_next[slot], kal, sizeof kal_next[slot]);
+        __asm__ __volatile__("" ::: "memory");
+        chords_pending = (uint8_t)(slot + 1);
+    }
 }
 
 /* the bank's own note grid: the web app's kalimba grid, from its seed (its own LCG, so the same notes) */
@@ -1071,9 +1072,11 @@ static void do_step(int off)
     } else if (rec_state == TP_REC_ON && rec_click && s % 4 == 0)
         click(off, s % 16 == 0, 1);
     if (chords_pending && s % 16 == 0) {   /* a new progression: from this bar line */
-        memcpy(chords, chords_next, sizeof chords);
-        memcpy(tp_kal, kal_next, sizeof tp_kal);
-        chords_pending = 0;
+        uint8_t p = chords_pending;
+        memcpy(chords, chords_next[p - 1], sizeof chords);
+        memcpy(tp_kal, kal_next[p - 1], sizeof tp_kal);
+        if (chords_pending == p)             /* not replaced meanwhile (that one comes at the next bar line) */
+            chords_pending = 0;
     }
     for (l = 0; l < TP_NLOOP; l++) {
         if (lp[l].pending && s % (bank->canvas ? 16 : 4) == 0)   /* a canvas's loops join on the bar */

@@ -97,10 +97,9 @@ float tp_sps(void);                             /* seconds per step */
 float tp_rand(void);                            /* [0, 1) */
 const tp_chord_t *tp_chord_at(int step);
 const tp_chord_t *tp_chords(void);              /* the four playing */
-/* new chords and note grid (tp_harmony): at the next bar line, or now (when nothing plays); while one change waits
- * for its bar line another is ignored (tp_chords_pending: try again) */
+/* new chords and note grid (tp_harmony): at the next bar line, or now (when nothing plays); a change made while
+ * another waits for its bar line replaces it */
 void tp_set_chords(const tp_chord_t *chords4, const uint8_t *kal64, int now);
-int tp_chords_pending(void);
 void tp_bank_kal(const tp_bank_t *b, uint8_t *kal64);   /* the bank's own note grid */
 extern uint8_t tp_kal[64];
 
