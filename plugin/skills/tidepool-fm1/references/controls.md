@@ -33,7 +33,7 @@ nothing picked brings back the mix that was stopped.
 
 | Control | What it does |
 |---|---|
-| White keys 1-16 | Turn a loop on or off. Keys 1-4 are the top row of pools, 5-8 the second, 9-12 the third, 13-16 the bottom. While playing, a loop joins on the beat: its key and pool blink until it does, then its key stays lit. While stopped, it blinks until PLAY. Turning one off fades it out |
+| White keys 1-16 | Turn a loop on or off. Keys 1-4 are the top row of pools, 5-8 the second, 9-12 the third, 13-16 the bottom; keys 1, 5, 9 and 13 glow faintly while off, marking where each row starts (not on the Blank Canvas while recording or deleting). While playing, a loop joins on the beat: its key and pool blink until it does, then its key stays lit. While stopped, it blinks until PLAY. Turning one off fades it out |
 | Black keys | Not used in playback (the screen says NOT USED YET). In the Blank Canvas's recording mode they play notes |
 
 The rows are, top to bottom: drones and pads, melodies, beats, then textures (the scene's atmosphere: rain, wind,

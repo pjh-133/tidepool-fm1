@@ -1817,6 +1817,10 @@ void app_frame(void)
     }
     plat_glow(1);
     plat_leds(btn, keys);
+    /* each row's first white key (1, 5, 9, 13) a little lit while it is not, so the rows can be found on the keys;
+     * not while the keys are deleting or playing a take */
+    plat_lights_mid(0, IS_CANVAS && (ui.edit_down || ui.rec_mode) ? 0u :
+                    1u << WK[0] | 1u << WK[4] | 1u << WK[8] | 1u << WK[12]);
     {
         static uint32_t last_banner;            /* the banner's scene moves: about 10 frames a second */
         if (now - last_banner >= 100u) {

@@ -41,7 +41,7 @@ Each pool is a loop that glows in its row's colour while it plays.
 
 | Control | What it does |
 |---|---|
-| **White keys 1–16** | Turn a loop on or off. Rows, top to bottom: drones, melodies, beats, then textures (rain, wind, fire: the scene's atmosphere). While the music is playing, a loop waits for the next beat to come in, blinking until it does. While it's stopped, a loop you pick blinks until you press PLAY |
+| **White keys 1–16** | Turn a loop on or off. Rows, top to bottom: drones, melodies, beats, then textures (rain, wind, fire: the scene's atmosphere). While the music is playing, a loop waits for the next beat to come in, blinking until it does. While it's stopped, a loop you pick blinks until you press PLAY. Keys 1, 5, 9 and 13 glow faintly to mark where each row starts |
 | **KNOB 1–4** | Adjust the selected row's four loops, one knob each |
 | **OCT− / OCT+** | Choose what the knobs adjust: Volume, Attack, Decay, Reverb, Echo or Pan (shown bottom left) |
 | **ALGORITHM** | Choose the row the knobs adjust. Pressing a key selects its row too |
